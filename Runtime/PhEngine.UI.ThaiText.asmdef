@@ -1,0 +1,17 @@
+{
+    "name": "PhEngine.UI.ThaiText",
+    "rootNamespace": "",
+    "references": [
+        "Unity.TextMeshPro",
+        "PhEngine.UI"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
