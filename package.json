@@ -1,7 +1,7 @@
 {
   "name": "com.phun.phengine.thaitext",
   "displayName": "PhEngine Thai Text",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "PhEngine Thai Text package",
   "keywords": [],
   "dependencies": {
