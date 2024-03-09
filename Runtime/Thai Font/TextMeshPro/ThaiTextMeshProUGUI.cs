@@ -50,7 +50,7 @@ namespace PhEngine.UI.ThaiText
         {
             var selectedGameObject = UnityEditor.Selection.activeGameObject;
             if (selectedGameObject != null)
-                return selectedGameObject.TryGetComponent<Canvas>(out var canvas) ? 
+                return TryGetCanvasInParents(selectedGameObject.transform, out var canvas) ? 
                     CreateTextUnderCanvas(canvas) : 
                     CreateCanvasWithText(selectedGameObject.transform);
             
@@ -58,6 +58,21 @@ namespace PhEngine.UI.ThaiText
             return firstOrDefaultCanvas ? 
                 CreateTextUnderCanvas(firstOrDefaultCanvas) : 
                 CreateCanvasWithText();
+        }
+
+        static bool TryGetCanvasInParents(Transform target, out Canvas canvas)
+        {
+            canvas = null;
+            if (target.TryGetComponent<Canvas>(out canvas))
+            {
+                return true;
+            }
+            else if (target.parent != null)
+            {
+                return TryGetCanvasInParents(target.parent, out canvas);
+            }
+
+            return false;
         }
 
         static ThaiTextMeshProUGUI CreateTextUnderCanvas(Canvas canvasTransform)
