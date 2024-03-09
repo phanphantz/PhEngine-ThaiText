@@ -5,7 +5,6 @@
   "description": "PhEngine Thai Text package",
   "keywords": [],
   "dependencies": {
-    "com.phun.phengine.ui": "",
     "com.unity.textmeshpro": ""
   },
   "repository": {
