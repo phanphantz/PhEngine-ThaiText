@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace PhEngine.Editor.ThaiTMP
 {
-    public static class ThaiLanguageInfo
+    public static class ThaiGlyphHelper
     {
         static char[] behindDashGlyphs => allFollowingVowels
                 .Concat(lowerVowels)

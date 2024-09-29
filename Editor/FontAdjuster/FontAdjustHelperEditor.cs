@@ -259,8 +259,8 @@ namespace PhEngine.Editor.ThaiTMP
             EditorGUI.BeginChangeCheck();
 
             var values = (ThaiGlyphPreset[])Enum.GetValues(typeof(ThaiGlyphPreset));
-            var popups = values.Select(e => $"{ThaiLanguageInfo.GetThaiGlyphGroupName(e)} ({e})").ToArray();
-            var currentIndex = Array.IndexOf(popups,  $"{ThaiLanguageInfo.GetThaiGlyphGroupName(group.preset)} ({group.preset})");
+            var popups = values.Select(e => $"{ThaiGlyphHelper.GetThaiGlyphGroupName(e)} ({e})").ToArray();
+            var currentIndex = Array.IndexOf(popups,  $"{ThaiGlyphHelper.GetThaiGlyphGroupName(group.preset)} ({group.preset})");
             var newIndex = EditorGUILayout.Popup("Glyph Group", currentIndex, popups);
             if (EditorGUI.EndChangeCheck())
             {
@@ -276,7 +276,7 @@ namespace PhEngine.Editor.ThaiTMP
                 if (!isInputEmpty)
                 {
                     EditorGUILayout.BeginHorizontal();
-                    var displayedGlyphs = newCharacters.Select(c => ThaiLanguageInfo.GetDisplayedString(c.ToString()));
+                    var displayedGlyphs = newCharacters.Select(c => ThaiGlyphHelper.GetDisplayedString(c.ToString()));
                     EditorGUILayout.LabelField("Preview : ", EditorStyles.boldLabel, GUILayout.Width(95));
              
                     EditorGUILayout.LabelField(string.Join(", ", displayedGlyphs), hugeFontStyle);
@@ -338,7 +338,7 @@ namespace PhEngine.Editor.ThaiTMP
                 }
                 else
                 {
-                    EditorGUILayout.LabelField(" "+ ThaiLanguageInfo.GetDisplayedString(character.ToString()), hugeFontStyle, GUILayout.Width(cellSize), GUILayout.Height(25f));
+                    EditorGUILayout.LabelField(" "+ ThaiGlyphHelper.GetDisplayedString(character.ToString()), hugeFontStyle, GUILayout.Width(cellSize), GUILayout.Height(25f));
                 }
 
                 if (isCustomMode)

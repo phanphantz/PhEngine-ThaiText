@@ -34,7 +34,8 @@ namespace PhEngine.Editor.ThaiTMP
             var enabledCombinations = glyphCombinationList.Where(c => c.isEnabled).ToArray();
             foreach (var combination in enabledCombinations)
                 InjectCombination(combination);
-            ApplyChanges();
+            ApplyChangesToFontAsset();
+            ApplyToTesterText();
         }
 
         void DisposeCachedPairs()
@@ -62,29 +63,12 @@ namespace PhEngine.Editor.ThaiTMP
                         continue;
 
                     var targetPair = GetPairAdjustmentRecord(targetGlyphIndex, pairGlyphIndex);
-                    ModifyPairGlyph(targetPair, combination);
+                    ModifyPair(targetPair, combination);
                 }
             }
         }
-
-        void ApplyChanges()
-        {
-            TMPro_EventManager.ON_FONT_PROPERTY_CHANGED(true, fontAsset);
-            fontAsset.ReadFontAssetDefinition();
-            EditorUtility.SetDirty(fontAsset);
-            ApplyToTesterText();
-        }
-
-        void ApplyToTesterText()
-        {
-            if (testerTMPText)
-            {
-                testerTMPText.font = fontAsset;
-                testerTMPText.text = testMessage;
-            }
-        }
-
-        private TMP_GlyphPairAdjustmentRecord GetPairAdjustmentRecord(uint firstGlyphIndex, uint secondGlyphIndex)
+        
+        TMP_GlyphPairAdjustmentRecord GetPairAdjustmentRecord(uint firstGlyphIndex, uint secondGlyphIndex)
         {
             var adjustmentRecords = fontAsset.fontFeatureTable.glyphPairAdjustmentRecords;
             foreach (var record in adjustmentRecords)
@@ -100,15 +84,8 @@ namespace PhEngine.Editor.ThaiTMP
             fontAsset.fontFeatureTable.glyphPairAdjustmentRecords.Add(newPairRecord);
             return newPairRecord;
         }
-
-        public void CleanAndRebuild()
-        {
-            fontAsset.fontFeatureTable.glyphPairAdjustmentRecords.Clear();
-            EditorUtility.SetDirty(fontAsset);
-            ApplyModifications();
-        }
-
-        private void ModifyPairGlyph(TMP_GlyphPairAdjustmentRecord pairRecord, GlyphCombination glyphCombination)
+        
+        void ModifyPair(TMP_GlyphPairAdjustmentRecord pairRecord, GlyphCombination glyphCombination)
         {
             var firstRecord = pairRecord.firstAdjustmentRecord;
             firstRecord.glyphValueRecord = ApplyPlacement(glyphCombination.first, firstRecord);
@@ -120,6 +97,29 @@ namespace PhEngine.Editor.ThaiTMP
             fontAsset.fontFeatureTable.glyphPairAdjustmentRecords.Remove(pairRecord);
             fontAsset.fontFeatureTable.glyphPairAdjustmentRecords.Add(modifiedPair);
             cachedPairList.Add(modifiedPair);
+        }
+
+        void ApplyChangesToFontAsset()
+        {
+            TMPro_EventManager.ON_FONT_PROPERTY_CHANGED(true, fontAsset);
+            fontAsset.ReadFontAssetDefinition();
+            EditorUtility.SetDirty(fontAsset);
+        }
+
+        void ApplyToTesterText()
+        {
+            if (!testerTMPText) 
+                return;
+            
+            testerTMPText.font = fontAsset;
+            testerTMPText.text = testMessage;
+        }
+
+        public void CleanAndRebuild()
+        {
+            fontAsset.fontFeatureTable.glyphPairAdjustmentRecords.Clear();
+            EditorUtility.SetDirty(fontAsset);
+            ApplyModifications();
         }
 
         static TMP_GlyphValueRecord ApplyPlacement(GlyphGroup group, TMP_GlyphAdjustmentRecord secondRecord)

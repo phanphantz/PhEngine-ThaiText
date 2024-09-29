@@ -17,9 +17,9 @@ namespace PhEngine.Editor.ThaiTMP
             get
             {
                 if (preset != ThaiGlyphPreset.Custom)
-                    return ThaiLanguageInfo.GetThaiGlyphGroupName(preset);
+                    return ThaiGlyphHelper.GetThaiGlyphGroupName(preset);
 
-                var displayedChars = glyphs.Select(c => ThaiLanguageInfo.GetDisplayedString(c.ToString())).ToArray();
+                var displayedChars = glyphs.Select(c => ThaiGlyphHelper.GetDisplayedString(c.ToString())).ToArray();
                 if (displayedChars.Length == 1)
                     return displayedChars.FirstOrDefault();
 
@@ -44,7 +44,7 @@ namespace PhEngine.Editor.ThaiTMP
         public void AssignGroup(ThaiGlyphPreset value)
         {
             preset = value;
-            var presetGlyphs = ThaiLanguageInfo.GetGlyphsOf(preset);
+            var presetGlyphs = ThaiGlyphHelper.GetGlyphsOf(preset);
             if (presetGlyphs.Length > 0)
                 glyphs = string.Join("", presetGlyphs);
         }
