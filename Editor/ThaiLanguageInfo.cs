@@ -21,7 +21,7 @@ namespace PhEngine.UI.ThaiText.Editor
         public static readonly char thanThaKhaat = '์';
         public static readonly char saraAum = 'ำ';
         
-        public static readonly char[] allLetters = new char[]
+        public static readonly char[] allConsonants = new char[]
         {
             'ก', 'ข', 'ฃ', 'ค', 'ฅ', 'ฆ', 'ง', 'จ', 'ฉ', 'ช',
             'ซ', 'ฌ', 'ญ', 'ฎ', 'ฏ', 'ฐ', 'ฑ', 'ฒ', 'ณ', 'ด',
@@ -30,12 +30,12 @@ namespace PhEngine.UI.ThaiText.Editor
             'ห', 'ฬ', 'อ', 'ฮ'
         };
 
-        public static readonly char[] descenderLetters = new char[]
+        public static readonly char[] descenderConsonants = new char[]
         {
             'ฎ', 'ฏ'
         };
 
-        public static readonly char[] ascenderLetters = new char[]
+        public static readonly char[] ascenderConsonants = new char[]
         {
             'ป', 'ฝ', 'ฟ', 'ฬ'
         };
@@ -75,14 +75,14 @@ namespace PhEngine.UI.ThaiText.Editor
                 case ThaiGlyphGroup.ToneMarks:
                     return "วรรณยุกต์";
                 case ThaiGlyphGroup.ThanThaKhaat:
-                    return "ทัณฑฆาต / การันต์";
+                    return "ทัณฑฆาต";
                 case ThaiGlyphGroup.SaraAum:
                     return "สระอำ";
-                case ThaiGlyphGroup.AllLetters:
-                    return "พยัญชนะทั้งหมด";
-                case ThaiGlyphGroup.DescenderLetters:
+                case ThaiGlyphGroup.AllConsonants:
+                    return "ก - ฮ";
+                case ThaiGlyphGroup.DescenderConsonants:
                     return "พยัญชนะหางล่าง";
-                case ThaiGlyphGroup.AscenderLetters:
+                case ThaiGlyphGroup.AscenderConsonants:
                     return "พยัญชนะหางบน";
                 case ThaiGlyphGroup.Custom:
                     return "กำหนดเอง";
@@ -95,12 +95,12 @@ namespace PhEngine.UI.ThaiText.Editor
         {
             switch (group)
             {
-                case ThaiGlyphGroup.AllLetters:
-                    return allLetters;
-                case ThaiGlyphGroup.AscenderLetters:
-                    return ascenderLetters;
-                case ThaiGlyphGroup.DescenderLetters:
-                    return descenderLetters;
+                case ThaiGlyphGroup.AllConsonants:
+                    return allConsonants;
+                case ThaiGlyphGroup.AscenderConsonants:
+                    return ascenderConsonants;
+                case ThaiGlyphGroup.DescenderConsonants:
+                    return descenderConsonants;
                 case ThaiGlyphGroup.AllUpperGlyphs:
                     return allUpperGlyphs;
                 case ThaiGlyphGroup.UpperVowels:
@@ -128,9 +128,9 @@ namespace PhEngine.UI.ThaiText.Editor
 
     public enum ThaiGlyphGroup
     {
-        AllLetters, 
-        AscenderLetters,
-        DescenderLetters, 
+        AllConsonants, 
+        AscenderConsonants,
+        DescenderConsonants, 
         AllUpperGlyphs, 
         UpperVowels, 
         ToneMarks, 
