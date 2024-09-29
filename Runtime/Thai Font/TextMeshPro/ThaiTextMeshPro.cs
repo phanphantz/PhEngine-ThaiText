@@ -11,7 +11,7 @@ namespace PhEngine.UI.ThaiText
         public override void SetVerticesDirty()
         {
             if (IsShouldAIsAdjustThaiText())
-                m_text = ThaiFontAdjuster.Adjust(m_text);
+                m_text = ThaiFontAdjuster.Adjust(m_text, font);
             
             base.SetVerticesDirty();
         }
