@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: FontAdjustHelper
   m_EditorClassIdentifier: 
   testerTMPText: {fileID: 0}
+  testerTMPSize: {x: 50, y: 25}
   testMessage: "\u0E1B\u0E34\u0E48\u0E19 \u0E2D\u0E37\u0E49\u0E2D \u0E08\u0E35\u0E4A\u0E14
     \u0E2D\u0E37\u0E49\u0E21 \u0E1B\u0E23\u0E37\u0E4B\u0E2D \u0E1C\u0E37\u0E48\u0E19
     \u0E25\u0E34\u0E49\u0E19 \n\u0E15\u0E34\u0E4B\u0E21 \u0E1B\u0E23\u0E34\u0E48\u0E21
@@ -24,68 +25,68 @@ MonoBehaviour:
   glyphCombinationList:
   - isEnabled: 1
     first:
+      preset: 4
       glyphs: "\u0E34\u0E35\u0E36\u0E37\u0E47\u0E31"
-      group: 4
       xPlacement: 0
       yPlacement: 0
     second:
+      preset: 3
       glyphs: "\u0E34\u0E35\u0E36\u0E37\u0E47\u0E31\u0E4C\u0E48\u0E49\u0E4A\u0E4B"
-      group: 3
       xPlacement: 10
       yPlacement: 18
   - isEnabled: 1
     first:
+      preset: 4
       glyphs: "\u0E34\u0E35\u0E36\u0E37\u0E47\u0E31"
-      group: 4
       xPlacement: 0
       yPlacement: 0
     second:
+      preset: 11
       glyphs: "\u0E4B"
-      group: 11
       xPlacement: 0
       yPlacement: 20
   - isEnabled: 1
     first:
+      preset: 4
       glyphs: "\u0E34\u0E35\u0E36\u0E37\u0E47\u0E31"
-      group: 4
       xPlacement: 0
       yPlacement: 0
     second:
+      preset: 11
       glyphs: "\u0E48"
-      group: 11
       xPlacement: 0
       yPlacement: 20
   - isEnabled: 1
     first:
+      preset: 5
       glyphs: "\u0E48\u0E49\u0E4A\u0E4B"
-      group: 5
       xPlacement: 5
       yPlacement: 22
     second:
+      preset: 11
       glyphs: "\u0E33"
-      group: 9
       xPlacement: 0
       yPlacement: 0
   - isEnabled: 1
     first:
+      preset: 11
       glyphs: "\u0E0E\u0E0F"
-      group: 2
       xPlacement: 0
       yPlacement: 0
     second:
+      preset: 11
       glyphs: "\u0E38\u0E39"
-      group: 10
       xPlacement: -5
       yPlacement: -18
   - isEnabled: 1
     first:
+      preset: 11
       glyphs: "\u0E1B\u0E1D\u0E1F\u0E2C"
-      group: 11
       xPlacement: 0
       yPlacement: 0
     second:
+      preset: 11
       glyphs: "\u0E48"
-      group: 11
       xPlacement: -15
       yPlacement: 0
   cachedPairList:

@@ -1,27 +1,27 @@
 ﻿using System;
 using System.Linq;
 
-namespace PhEngine.UI.ThaiText.Editor
+namespace PhEngine.Editor.ThaiTMP
 {
     public static class ThaiLanguageInfo
     {
-        public static char[] behindDashGlyphs => allFollowingVowels
+        static char[] behindDashGlyphs => allFollowingVowels
                 .Concat(lowerVowels)
                 .Concat(allFollowingVowels)
                 .Concat(allUpperGlyphs)
                 .ToArray();
 
-        public static readonly char[] lowerVowels = new[] { 'ุ', 'ู'};
-        public static readonly char[] allFollowingVowels = new[] {'ะ', 'ำ', 'า', 'ๅ'};
-        public static readonly char[] leadingVowels = new[] {'เ', 'แ', 'โ', 'ไ', 'ใ'};
-        public static readonly char[] upperVowels = new[] { 'ิ', 'ี', 'ึ', 'ื', '็', 'ั'};
-        
-        public static readonly char[] allUpperGlyphs = new[] { 'ิ', 'ี', 'ึ', 'ื', '็', 'ั', '์', '่', '้', '๊', '๋'};
-        public static readonly char[] toneMarks = new[] {'่', '้', '๊', '๋'};
-        public static readonly char thanThaKhaat = '์';
-        public static readonly char saraAum = 'ำ';
-        
-        public static readonly char[] allConsonants = new char[]
+        static readonly char[] lowerVowels = new[] { 'ุ', 'ู'};
+        static readonly char[] allFollowingVowels = new[] {'ะ', 'ำ', 'า', 'ๅ'};
+        static readonly char[] leadingVowels = new[] {'เ', 'แ', 'โ', 'ไ', 'ใ'};
+        static readonly char[] upperVowels = new[] { 'ิ', 'ี', 'ึ', 'ื', '็', 'ั'};
+
+        static readonly char[] allUpperGlyphs = new[] { 'ิ', 'ี', 'ึ', 'ื', '็', 'ั', '์', '่', '้', '๊', '๋'};
+        static readonly char[] toneMarks = new[] {'่', '้', '๊', '๋'};
+        static readonly char thanThaKhaat = '์';
+        static readonly char saraAum = 'ำ';
+
+        static readonly char[] allConsonants = new char[]
         {
             'ก', 'ข', 'ฃ', 'ค', 'ฅ', 'ฆ', 'ง', 'จ', 'ฉ', 'ช',
             'ซ', 'ฌ', 'ญ', 'ฎ', 'ฏ', 'ฐ', 'ฑ', 'ฒ', 'ณ', 'ด',
@@ -30,12 +30,12 @@ namespace PhEngine.UI.ThaiText.Editor
             'ห', 'ฬ', 'อ', 'ฮ'
         };
 
-        public static readonly char[] descenderConsonants = new char[]
+        static readonly char[] descenderConsonants = new char[]
         {
             'ฎ', 'ฏ'
         };
 
-        public static readonly char[] ascenderConsonants = new char[]
+        static readonly char[] ascenderConsonants = new char[]
         {
             'ป', 'ฝ', 'ฟ', 'ฬ'
         };
@@ -58,75 +58,74 @@ namespace PhEngine.UI.ThaiText.Editor
             return characters;
         }
 
-        public static string GetThaiGlyphGroupName(ThaiGlyphGroup group)
+        public static string GetThaiGlyphGroupName(ThaiGlyphPreset preset)
         {
-            switch (group)
+            switch (preset)
             {
-                case ThaiGlyphGroup.LowerVowels:
+                case ThaiGlyphPreset.LowerVowels:
                     return "สระล่าง";
-                case ThaiGlyphGroup.AllUpperGlyphs:
-                    return "อักขระด้านบนทั้งหมด";
-                case ThaiGlyphGroup.AllFollowingVowels:
+                case ThaiGlyphPreset.AllUpperGlyphs:
+                    return "อักขระด้านบน";
+                case ThaiGlyphPreset.AllFollowingVowels:
                     return "สระหลัง";
-                case ThaiGlyphGroup.LeadingVowels:
+                case ThaiGlyphPreset.LeadingVowels:
                     return "สระหน้า";
-                case ThaiGlyphGroup.UpperVowels:
+                case ThaiGlyphPreset.UpperVowels:
                     return "สระบน";
-                case ThaiGlyphGroup.ToneMarks:
+                case ThaiGlyphPreset.ToneMarks:
                     return "วรรณยุกต์";
-                case ThaiGlyphGroup.ThanThaKhaat:
+                case ThaiGlyphPreset.ThanThaKhaat:
                     return "ทัณฑฆาต";
-                case ThaiGlyphGroup.SaraAum:
+                case ThaiGlyphPreset.SaraAum:
                     return "สระอำ";
-                case ThaiGlyphGroup.AllConsonants:
+                case ThaiGlyphPreset.AllConsonants:
                     return "ก - ฮ";
-                case ThaiGlyphGroup.DescenderConsonants:
+                case ThaiGlyphPreset.DescenderConsonants:
                     return "พยัญชนะหางล่าง";
-                case ThaiGlyphGroup.AscenderConsonants:
+                case ThaiGlyphPreset.AscenderConsonants:
                     return "พยัญชนะหางบน";
-                case ThaiGlyphGroup.Custom:
+                case ThaiGlyphPreset.Custom:
                     return "กำหนดเอง";
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(group), group, null);
+                    throw new ArgumentOutOfRangeException(nameof(preset), preset, null);
             }
         }
         
-        public static char[] GetGlyphsOf(ThaiGlyphGroup group)
+        public static char[] GetGlyphsOf(ThaiGlyphPreset preset)
         {
-            switch (group)
+            switch (preset)
             {
-                case ThaiGlyphGroup.AllConsonants:
+                case ThaiGlyphPreset.AllConsonants:
                     return allConsonants;
-                case ThaiGlyphGroup.AscenderConsonants:
+                case ThaiGlyphPreset.AscenderConsonants:
                     return ascenderConsonants;
-                case ThaiGlyphGroup.DescenderConsonants:
+                case ThaiGlyphPreset.DescenderConsonants:
                     return descenderConsonants;
-                case ThaiGlyphGroup.AllUpperGlyphs:
+                case ThaiGlyphPreset.AllUpperGlyphs:
                     return allUpperGlyphs;
-                case ThaiGlyphGroup.UpperVowels:
+                case ThaiGlyphPreset.UpperVowels:
                     return upperVowels;
-                case ThaiGlyphGroup.ToneMarks:
+                case ThaiGlyphPreset.ToneMarks:
                     return toneMarks;
-                case ThaiGlyphGroup.ThanThaKhaat:
+                case ThaiGlyphPreset.ThanThaKhaat:
                     return new char[]{thanThaKhaat};
-                case ThaiGlyphGroup.LeadingVowels:
+                case ThaiGlyphPreset.LeadingVowels:
                     return leadingVowels;
-                case ThaiGlyphGroup.AllFollowingVowels:
+                case ThaiGlyphPreset.AllFollowingVowels:
                     return allFollowingVowels;
-                case ThaiGlyphGroup.SaraAum:
+                case ThaiGlyphPreset.SaraAum:
                     return new char[]{saraAum};
-                case ThaiGlyphGroup.LowerVowels:
+                case ThaiGlyphPreset.LowerVowels:
                     return lowerVowels;
-                case ThaiGlyphGroup.Custom:
+                case ThaiGlyphPreset.Custom:
                     return new char[] { };
-                
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(group), group, null);
+                    throw new ArgumentOutOfRangeException(nameof(preset), preset, null);
             }
         }
     }
 
-    public enum ThaiGlyphGroup
+    public enum ThaiGlyphPreset
     {
         AllConsonants, 
         AscenderConsonants,

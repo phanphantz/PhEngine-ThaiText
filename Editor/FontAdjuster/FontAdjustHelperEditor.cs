@@ -6,7 +6,7 @@ using UnityEditor;
 using UnityEngine;
 using TMP_Text = TMPro.TMP_Text;
 
-namespace PhEngine.UI.ThaiText.Editor
+namespace PhEngine.Editor.ThaiTMP
 {
     [CustomEditor(typeof(FontAdjustHelper))]
     public class FontAdjustHelperEditor : UnityEditor.Editor
@@ -46,18 +46,18 @@ namespace PhEngine.UI.ThaiText.Editor
             if (EditorGUI.EndChangeCheck())
             {
                 Undo.RecordObject(fontAdjustHelper, "Change font asset");
-                fontAdjustHelper.fontAsset = fontAsset;
+                fontAdjustHelper.SetFontAsset(fontAsset);
                 ApplyChanges();
             }
             if (fontAdjustHelper.fontAsset)
             {
-                if (GUILayout.Button("Clean Rebuild", GUILayout.ExpandWidth(false)))
+                if (GUILayout.Button("Clean & Rebuild", GUILayout.ExpandWidth(false)))
                 {
-                    bool result = EditorUtility.DisplayDialog($"Confirmation", $"Are you sure you want to Clean Rebuild all the glyph pair adjustments? Any pair adjustment you made directly to the font asset will be lost", "Yes", "No");
+                    bool result = EditorUtility.DisplayDialog($"Confirmation", $"Are you sure you want to Clean and Rebuild all the glyph pair adjustments?\n\nAny pair adjustment you made directly to the font asset will be lost", "Yes", "No");
                     if (result)
                     {
                         Undo.RecordObject(fontAdjustHelper.fontAsset, "Perform Clean Rebuild");
-                        fontAdjustHelper.CleanRebuild();
+                        fontAdjustHelper.CleanAndRebuild();
                         EditorGUILayout.EndHorizontal();
                         return;
                     }
@@ -75,7 +75,7 @@ namespace PhEngine.UI.ThaiText.Editor
 
             EditorGUILayout.BeginHorizontal();
             EditorGUI.BeginChangeCheck();
-            var testerTMPText = EditorGUILayout.ObjectField("Tester TMP Text", fontAdjustHelper.testerTMPText, typeof(TMP_Text), true) as TMP_Text;
+            var testerTMPText = EditorGUILayout.ObjectField("Tester TMP Text", fontAdjustHelper.TesterTMPText, typeof(TMP_Text), true) as TMP_Text;
             if (EditorGUI.EndChangeCheck())
             {
                 Undo.RecordObject(fontAdjustHelper, "Change Tester TMP Text");
@@ -85,30 +85,12 @@ namespace PhEngine.UI.ThaiText.Editor
             if (testerTMPText == null)
             {
                 if (GUILayout.Button("Create In Scene", GUILayout.ExpandWidth(false)))
-                {
-                    GameObject textObject = new GameObject("TMP_Text_FontTester");
-                    var textMeshPro = textObject.AddComponent<TextMeshPro>();
-                    textMeshPro.text = fontAdjustHelper.testMessage;
-                    textMeshPro.font = fontAdjustHelper.fontAsset;
-                    textMeshPro.rectTransform.sizeDelta = fontAdjustHelper.testerTMPSize;
-                    textMeshPro.fontSize = 24;
-                    textMeshPro.alignment = TextAlignmentOptions.Center;
-                    textMeshPro.color = Color.white;
-                    fontAdjustHelper.testerTMPText = textMeshPro;
-                    Undo.RegisterCreatedObjectUndo(textObject, "Create TextMeshPro Object");
-                    Selection.activeGameObject = textObject;
-                    EditorGUIUtility.PingObject(textObject);
-                    SceneView.lastActiveSceneView.FrameSelected();
-                    Selection.activeGameObject = null;
-                    Selection.SetActiveObjectWithContext(fontAdjustHelper, fontAdjustHelper);
-                }
+                    CreateTesterTMPText();
             }
             else
             {
                 if (GUILayout.Button("Dispose", GUILayout.ExpandWidth(false)))
-                {
                    DestroyImmediate(testerTMPText.gameObject);
-                }
             }
            
             EditorGUILayout.EndHorizontal();
@@ -135,6 +117,23 @@ namespace PhEngine.UI.ThaiText.Editor
             
             EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
             DrawCombinations(combinationList);
+        }
+
+        void CreateTesterTMPText()
+        {
+            GameObject textObject = new GameObject("TMP_Text_FontTester");
+            var textMeshPro = textObject.AddComponent<TextMeshPro>();
+            textMeshPro.rectTransform.sizeDelta = fontAdjustHelper.testerTMPSize;
+            textMeshPro.fontSize = 24;
+            textMeshPro.alignment = TextAlignmentOptions.Center;
+            textMeshPro.color = Color.white;
+            fontAdjustHelper.SetTesterTMPText(textMeshPro);
+            Undo.RegisterCreatedObjectUndo(textObject, "Create TextMeshPro Object");
+            Selection.activeGameObject = textObject;
+            EditorGUIUtility.PingObject(textObject);
+            SceneView.lastActiveSceneView.FrameSelected();
+            Selection.activeGameObject = null;
+            Selection.SetActiveObjectWithContext(fontAdjustHelper, fontAdjustHelper);
         }
 
         void DrawCombinations(List<GlyphCombination> list)
@@ -249,28 +248,28 @@ namespace PhEngine.UI.ThaiText.Editor
             return false;
         }
 
-        void DrawCharacterAdder(string fieldName, ref string newCharacters, ref GlyphOffset offset)
+        void DrawCharacterAdder(string fieldName, ref string newCharacters, ref GlyphGroup group)
         {
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
             EditorGUILayout.LabelField(fieldName, EditorStyles.boldLabel);
             EditorGUI.indentLevel++;
-            if (!string.IsNullOrEmpty(offset.glyphs.Trim()))
-                DrawPlacementAdjustor(offset);
+            if (!string.IsNullOrEmpty(group.glyphs.Trim()))
+                DrawPlacementAdjustor(group);
 
             EditorGUI.BeginChangeCheck();
 
-            var values = (ThaiGlyphGroup[])Enum.GetValues(typeof(ThaiGlyphGroup));
+            var values = (ThaiGlyphPreset[])Enum.GetValues(typeof(ThaiGlyphPreset));
             var popups = values.Select(e => $"{ThaiLanguageInfo.GetThaiGlyphGroupName(e)} ({e})").ToArray();
-            var currentIndex = Array.IndexOf(popups,  $"{ThaiLanguageInfo.GetThaiGlyphGroupName(offset.group)} ({offset.group})");
+            var currentIndex = Array.IndexOf(popups,  $"{ThaiLanguageInfo.GetThaiGlyphGroupName(group.preset)} ({group.preset})");
             var newIndex = EditorGUILayout.Popup("Glyph Group", currentIndex, popups);
             if (EditorGUI.EndChangeCheck())
             {
                 Undo.RecordObject(fontAdjustHelper, "Change Glyph Groups");
-                offset.AssignGroup((ThaiGlyphGroup)newIndex);
+                group.AssignGroup((ThaiGlyphPreset)newIndex);
                 ApplyChanges();
             }
             
-            if (offset.group == ThaiGlyphGroup.Custom)
+            if (group.preset == ThaiGlyphPreset.Custom)
             {
                 newCharacters = EditorGUILayout.TextField("Add Glyph: " , newCharacters);
                 var isInputEmpty = string.IsNullOrEmpty(newCharacters.Trim());
@@ -284,7 +283,7 @@ namespace PhEngine.UI.ThaiText.Editor
                     if (GUILayout.Button("Add", GUILayout.ExpandWidth(false)))
                     {
                         Undo.RecordObject(fontAdjustHelper, "Modify Characters");
-                        offset.glyphs = string.Join("",offset.glyphs.ToCharArray().Union(newCharacters.ToCharArray()));
+                        group.glyphs = string.Join("",group.glyphs.ToCharArray().Union(newCharacters.ToCharArray()));
                         newCharacters = "";
                         ApplyChanges();
                     }
@@ -293,19 +292,19 @@ namespace PhEngine.UI.ThaiText.Editor
             }
             EditorGUI.indentLevel--;
 
-            DrawGlyph(offset.group == ThaiGlyphGroup.Custom, ref offset.glyphs);
+            DrawGlyph(group.preset == ThaiGlyphPreset.Custom, ref group.glyphs);
             EditorGUILayout.EndVertical();
         }
 
-        void DrawPlacementAdjustor(GlyphOffset offset)
+        void DrawPlacementAdjustor(GlyphGroup group)
         {
             EditorGUI.BeginChangeCheck();
-            var offsetVector = EditorGUILayout.Vector2Field("Offset", new Vector2(offset.xPlacement, offset.yPlacement));
+            var offsetVector = EditorGUILayout.Vector2Field("Offset", new Vector2(group.xPlacement, group.yPlacement));
             if (EditorGUI.EndChangeCheck())
             {
                 Undo.RecordObject(fontAdjustHelper, "Change Target Character");
-                offset.xPlacement = offsetVector.x;
-                offset.yPlacement = offsetVector.y;
+                group.xPlacement = offsetVector.x;
+                group.yPlacement = offsetVector.y;
                 ApplyChanges();
             }
         }

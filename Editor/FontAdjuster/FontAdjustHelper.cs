@@ -4,13 +4,15 @@ using TMPro;
 using UnityEditor;
 using UnityEngine;
 
-namespace PhEngine.UI.ThaiText.Editor
+namespace PhEngine.Editor.ThaiTMP
 {
     [CreateAssetMenu(menuName = "Create FontAdjustHelper", fileName = "FontAdjustHelper", order = 0)]
     public class FontAdjustHelper : ScriptableObject
     {
-        public TMP_Text testerTMPText;
-        public Vector2 testerTMPSize = new Vector2(50f, 25f);
+        public TMP_Text TesterTMPText => testerTMPText;
+        [SerializeField] TMP_Text testerTMPText;
+        
+        public Vector2 testerTMPSize = new Vector2(100f, 100f);
         public string testMessage = @"ปิ่น อื้อ จี๊ด อื้ม ปรื๋อ ผื่น ลิ้น 
             ติ๋ม ปริ่ม หั่น ปั้น ตั๊ก ป้า ม๊า 
             ฝ่า ป่า ฟ้า ผ่า ผ้า จ๋า สิทธิ์ 
@@ -19,8 +21,7 @@ namespace PhEngine.UI.ThaiText.Editor
         public TMP_FontAsset fontAsset;
         public List<GlyphCombination> glyphCombinationList;
 
-        [HideInInspector, SerializeField]
-        List<TMP_GlyphPairAdjustmentRecord> cachedPairList = new List<TMP_GlyphPairAdjustmentRecord>();
+        [HideInInspector, SerializeField] List<TMP_GlyphPairAdjustmentRecord> cachedPairList = new List<TMP_GlyphPairAdjustmentRecord>();
 
         [ContextMenu(nameof(ApplyModifications))]
         public void ApplyModifications()
@@ -30,7 +31,9 @@ namespace PhEngine.UI.ThaiText.Editor
 
             Undo.RecordObject(fontAsset, "Modify Pair Adjustments");
             DisposeCachedPairs();
-            InjectModifiedPairs();
+            var enabledCombinations = glyphCombinationList.Where(c => c.isEnabled).ToArray();
+            foreach (var combination in enabledCombinations)
+                InjectCombination(combination);
             ApplyChanges();
         }
 
@@ -43,27 +46,23 @@ namespace PhEngine.UI.ThaiText.Editor
 
             cachedPairList.Clear();
         }
-
-        void InjectModifiedPairs()
+        
+        void InjectCombination(GlyphCombination combination)
         {
-            var enabledCombinations = glyphCombinationList.Where(c => c.isEnabled).ToArray();
-            foreach (var glyphCouple in enabledCombinations)
+            var targetCharacters = combination.first.glyphs.Trim();
+            var pairCharacters = combination.second.glyphs.Trim();
+            foreach (var targetCharacter in targetCharacters)
             {
-                var targetCharacters = glyphCouple.first.glyphs.Trim();
-                var pairCharacters = glyphCouple.second.glyphs.Trim();
-                foreach (var targetCharacter in targetCharacters)
+                if (!TryGetGlyphIndex(fontAsset, targetCharacter, out var targetGlyphIndex, out _))
+                    continue;
+
+                foreach (var pairCharacter in pairCharacters)
                 {
-                    if (!TryGetGlyphIndex(fontAsset, targetCharacter, out var targetGlyphIndex, out _))
+                    if (!TryGetGlyphIndex(fontAsset, pairCharacter, out var pairGlyphIndex, out _))
                         continue;
 
-                    foreach (var pairCharacter in pairCharacters)
-                    {
-                        if (!TryGetGlyphIndex(fontAsset, pairCharacter, out var pairGlyphIndex, out _))
-                            continue;
-
-                        var targetPair = GetPairAdjustmentRecord(targetGlyphIndex, pairGlyphIndex);
-                        ModifyPairGlyph(targetPair, glyphCouple);
-                    }
+                    var targetPair = GetPairAdjustmentRecord(targetGlyphIndex, pairGlyphIndex);
+                    ModifyPairGlyph(targetPair, combination);
                 }
             }
         }
@@ -76,10 +75,13 @@ namespace PhEngine.UI.ThaiText.Editor
             ApplyToTesterText();
         }
 
-        public void ApplyToTesterText()
+        void ApplyToTesterText()
         {
             if (testerTMPText)
+            {
+                testerTMPText.font = fontAsset;
                 testerTMPText.text = testMessage;
+            }
         }
 
         private TMP_GlyphPairAdjustmentRecord GetPairAdjustmentRecord(uint firstGlyphIndex, uint secondGlyphIndex)
@@ -99,7 +101,7 @@ namespace PhEngine.UI.ThaiText.Editor
             return newPairRecord;
         }
 
-        public void CleanRebuild()
+        public void CleanAndRebuild()
         {
             fontAsset.fontFeatureTable.glyphPairAdjustmentRecords.Clear();
             EditorUtility.SetDirty(fontAsset);
@@ -120,11 +122,11 @@ namespace PhEngine.UI.ThaiText.Editor
             cachedPairList.Add(modifiedPair);
         }
 
-        static TMP_GlyphValueRecord ApplyPlacement(GlyphOffset offset, TMP_GlyphAdjustmentRecord secondRecord)
+        static TMP_GlyphValueRecord ApplyPlacement(GlyphGroup group, TMP_GlyphAdjustmentRecord secondRecord)
         {
             var record = secondRecord.glyphValueRecord;
-            record.xPlacement = offset.xPlacement;
-            record.yPlacement = offset.yPlacement;
+            record.xPlacement = group.xPlacement;
+            record.yPlacement = group.yPlacement;
             return record;
         }
 
@@ -133,7 +135,7 @@ namespace PhEngine.UI.ThaiText.Editor
         {
             glyphIndex = 0;
             characterIndex = -1;
-            TMP_Character characterData = fontAsset.characterTable.FirstOrDefault(c => c.unicode == character);
+            var characterData = fontAsset.characterTable.FirstOrDefault(c => c.unicode == character);
             if (characterData != null)
             {
                 glyphIndex = characterData.glyphIndex;
@@ -154,6 +156,12 @@ namespace PhEngine.UI.ThaiText.Editor
         public void SetTestText(string value)
         {
             testMessage = value;
+            ApplyToTesterText();
+        }
+
+        public void SetFontAsset(TMP_FontAsset target)
+        {
+            fontAsset = target;
             ApplyToTesterText();
         }
     }
