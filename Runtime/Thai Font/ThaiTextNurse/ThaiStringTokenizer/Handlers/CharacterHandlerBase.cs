@@ -9,7 +9,7 @@ namespace ThaiStringTokenizer.Handlers
 
         public virtual MatchingMode MatchingMode { get; set; }
         
-        public virtual int HandleCharacter(List<StringBuilder> resultWords, char[] characters, int index)
+        public virtual int HandleCharacter(List<StringBuilder> resultWords, string characters, int index)
         {
             var resultWord = characters[index].ToString();
 

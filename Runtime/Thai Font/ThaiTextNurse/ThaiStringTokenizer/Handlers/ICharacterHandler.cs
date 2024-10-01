@@ -11,6 +11,6 @@ namespace ThaiStringTokenizer.Handlers
 
         bool IsMatch(char character);
 
-        int HandleCharacter(List<StringBuilder> resultWords, char[] characters, int index);
+        int HandleCharacter(List<StringBuilder> resultWords, string characters, int index);
     }
 }

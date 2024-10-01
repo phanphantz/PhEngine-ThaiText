@@ -8,19 +8,18 @@ namespace ThaiStringTokenizer.Handlers
     public class ThaiCharacterHandler : CharacterHandlerBase, ICharacterHandler
     {
         private StringBuilder resultWord = new StringBuilder();
-        private StringBuilder moreCharacters = new StringBuilder();
+        private string moreCharacters;
         int count;
         int wordCount;
         bool isWordFound;
         char firstCharacter;
         
-        public override int HandleCharacter(List<StringBuilder> resultWords, char[] characters, int index)
+        public override int HandleCharacter(List<StringBuilder> resultWords, string characters, int index)
         {
+            var startIndex = index;
             firstCharacter = characters[index];
             resultWord.Clear();
             resultWord.Append(firstCharacter);
-            moreCharacters.Clear();
-            moreCharacters.Append(firstCharacter);
             isWordFound = false;
             wordCount = 0;
             
@@ -35,9 +34,8 @@ namespace ThaiStringTokenizer.Handlers
                 count = characters.Length;
                 for (int j = index + 1; j < count; j++)
                 {
-                    var currentCharacter = characters[j];
-                    moreCharacters.Append(currentCharacter);
-                    if (dicWords.Contains(moreCharacters.ToString()))
+                    moreCharacters = characters.Substring(startIndex, (j-startIndex)+1);
+                    if (dicWords.Contains(moreCharacters))
                     {
                         isWordFound = true;
                         index = j;

@@ -38,13 +38,12 @@ namespace ThaiStringTokenizer
             var resultWords = new List<StringBuilder>();
             var handlers = GetCharacterHandlers();
 
-            var inputWordChars = input.ToCharArray();
+            var inputWordChars = input;
             var charsLength = inputWordChars.Length;
 
             for (int i = 0; i < charsLength; i++)
             {
                 var character = inputWordChars[i];
-
                 foreach (var handler in handlers)
                 {
                     if (!handler.IsMatch(character)) 
