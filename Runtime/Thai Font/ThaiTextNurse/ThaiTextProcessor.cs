@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Lexto;
 using ThaiStringTokenizer;
 using UnityEngine;
 
@@ -8,6 +9,7 @@ namespace PhEngine.ThaiTMP
     {
         static string dictionaryName = "dictionary";
         static TextAsset  unsafeDictionary;
+        static ThaiTokenizer tokenizer;
         static TokenizerOptions options = new TokenizerOptions();
         
         public static bool TryGetDictionary(out string dictionaryContent)
@@ -40,8 +42,8 @@ namespace PhEngine.ThaiTMP
             if (!TryGetDictionary(out var dictionaryContent))
                 return thaiText;
             
-            //LexTo.Instance.InsertLineBreaks(thaiText, '\u200b');
-            var tokenizer = new ThaiTokenizer(dictionaryContent, options);
+            //return LexTo.Instance.InsertLineBreaks(thaiText, '\u200b');
+            tokenizer ??= new ThaiTokenizer(dictionaryContent, options);
             return tokenizer.GetTokenizedString(thaiText);
         }
 
