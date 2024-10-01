@@ -1,12 +1,11 @@
 {
-    "name": "PhEngine.UI.ThaiText",
-    "rootNamespace": "",
+    "name": "com.dgn.ThaiText.Editor",
     "references": [
-        "Unity.TextMeshPro",
-        "PhEngine.UI",
-        "com.dgn.ThaiText"
+        "GUID:cfd288e7fa1b75741b469e975663e0e9"
     ],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
