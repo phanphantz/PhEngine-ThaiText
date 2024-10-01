@@ -10,6 +10,7 @@ namespace ThaiStringTokenizer.Handlers
         private StringBuilder resultWord = new StringBuilder();
         private StringBuilder moreCharacters = new StringBuilder();
         int count;
+        int wordCount;
         bool isWordFound;
         char firstCharacter;
         
@@ -21,6 +22,7 @@ namespace ThaiStringTokenizer.Handlers
             moreCharacters.Clear();
             moreCharacters.Append(firstCharacter);
             isWordFound = false;
+            wordCount = 0;
             
             if (HandlePreviousWord(resultWords))
             {
@@ -48,9 +50,10 @@ namespace ThaiStringTokenizer.Handlers
                         isWordFound = true;
                         index = j;
                         resultWord.Clear();
+                        wordCount++;
                         resultWord.Append(moreCharacters);
                     }
-                    if (MatchingMode == MatchingMode.Shortest && isWordFound) 
+                    if ((MatchingMode == MatchingMode.Shortest && isWordFound) || wordCount >= 3) 
                         break;
                 }
             }
