@@ -11,12 +11,12 @@ namespace ThaiStringTokenizer.Characters
                 var characters = Consonants;
                 characters.AddRange(Vowels);
                 characters.AddRange(Sign);
-                characters.AddRange(CurrencySymbol);
+                //characters.AddRange(CurrencySymbol);
                 characters.AddRange(VowelLengthSign);
-                characters.AddRange(RepetitionMark);
+                //characters.AddRange(RepetitionMark);
                 characters.AddRange(ToneMarks);
-                characters.AddRange(Signs);
-                characters.AddRange(Digits);
+                //characters.AddRange(Signs);
+                //characters.AddRange(Digits);
 
                 return characters;
             }

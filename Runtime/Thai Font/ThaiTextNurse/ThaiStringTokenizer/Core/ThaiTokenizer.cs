@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text;
 using ThaiStringTokenizer.Models;
 
 namespace ThaiStringTokenizer
@@ -8,6 +9,8 @@ namespace ThaiStringTokenizer
         public string DictionaryContent { get;}
         public string Separator { get; }
         protected override string GetDictionaryContent() => DictionaryContent;
+
+        StringBuilder result = new StringBuilder();
         
         public ThaiTokenizer(string dictionaryContent, TokenizerOptions options)
         {
@@ -21,13 +24,13 @@ namespace ThaiStringTokenizer
         public string GetTokenizedString(string input)
         {
             var splitResultList = Split(input);
-            var result = string.Empty;
+            result.Clear();
             foreach (var word in splitResultList)
             {
-                result += word;
-                result += Separator;
+                result.Append(word);
+                result.Append(Separator);
             }
-            return result;
+            return result.ToString();
         }
 
         public List<string> Split(string input)
@@ -44,13 +47,12 @@ namespace ThaiStringTokenizer
 
                 foreach (var handler in handlers)
                 {
-                    if (!handler.IsMatch(character)) { continue; }
+                    if (!handler.IsMatch(character)) 
+                        continue;
 
                     handler.Dictionary = Dictionary;
                     handler.MatchingMode = MatchingMode;
-
                     i = handler.HandleCharacter(resultWords, inputWordChars, i);
-
                     break;
                 }
             }

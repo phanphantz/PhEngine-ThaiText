@@ -33,7 +33,16 @@ namespace ThaiStringTokenizer.Handlers
                 count = characters.Length;
                 for (int j = index + 1; j < count; j++)
                 {
-                    moreCharacters.Append(characters[j]);
+                    var currentCharacter = characters[j];
+                    // if (ThaiUnicodeCharacter.PrependVowels.Contains(currentCharacter))
+                    // {
+                    //     isWordFound = true;
+                    //     index = j-1;
+                    //     resultWord.Clear();
+                    //     resultWord.Append(moreCharacters);
+                    //     break;
+                    // }
+                    moreCharacters.Append(currentCharacter);
                     if (dicWords.Contains(moreCharacters.ToString()))
                     {
                         isWordFound = true;
