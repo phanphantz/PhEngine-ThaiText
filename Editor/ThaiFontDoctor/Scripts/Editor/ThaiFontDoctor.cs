@@ -6,8 +6,8 @@ using UnityEngine;
 
 namespace PhEngine.Editor.ThaiTMP
 {
-    [CreateAssetMenu(menuName = "Create FontAdjustHelper", fileName = "FontAdjustHelper", order = 0)]
-    public class FontAdjustHelper : ScriptableObject
+    [CreateAssetMenu(menuName = "PhEngine/ThaiFontDoctor", fileName = "ThaiFontDoctor", order = 0)]
+    public class ThaiFontDoctor : ScriptableObject
     {
         public TMP_Text TesterTMPText => testerTMPText;
         [SerializeField] TMP_Text testerTMPText;
