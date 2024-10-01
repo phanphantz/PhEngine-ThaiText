@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using ThaiStringTokenizer.Characters;
 
@@ -9,18 +8,18 @@ namespace ThaiStringTokenizer.Handlers
     public class ThaiCharacterHandler : CharacterHandlerBase, ICharacterHandler
     {
         private StringBuilder resultWord = new StringBuilder();
-        bool isFound;
+        private StringBuilder moreCharacters = new StringBuilder();
         int count;
         bool isWordFound;
-        string moreCharacters;
         char firstCharacter;
         
         public override int HandleCharacter(List<string> resultWords, char[] characters, int index)
         {
-            firstCharacter =characters[index];
+            firstCharacter = characters[index];
             resultWord.Clear();
-            resultWord.Append(characters[index]);
-            moreCharacters = firstCharacter.ToString();
+            resultWord.Append(firstCharacter);
+            moreCharacters.Clear();
+            moreCharacters.Append(firstCharacter);
             isWordFound = false;
             
             if (HandlePreviousWord(resultWords))
@@ -28,25 +27,22 @@ namespace ThaiStringTokenizer.Handlers
                 Append(resultWords, resultWord.ToString());
                 return index;
             }
-
-            isFound = Dictionary.TryGetValue(firstCharacter, out var dicWords);
-            if (isFound)
+            
+            if (Dictionary.TryGetValue(firstCharacter, out var dicWords))
             {
                 count = characters.Length;
                 for (int j = index + 1; j < count; j++)
                 {
-                    var character = characters[j];
-                    moreCharacters += character.ToString();
-                    var isMatchedWord = dicWords.Contains(moreCharacters);
-                    if (isMatchedWord)
+                    moreCharacters.Append(characters[j]);
+                    if (dicWords.Contains(moreCharacters.ToString()))
                     {
                         isWordFound = true;
                         index = j;
                         resultWord.Clear();
                         resultWord.Append(moreCharacters);
                     }
-
-                    if (MatchingMode == MatchingMode.Shortest && isWordFound) { break; }
+                    if (MatchingMode == MatchingMode.Shortest && isWordFound) 
+                        break;
                 }
             }
             HandleResultWords(resultWords, resultWord.ToString(), isWordFound);
