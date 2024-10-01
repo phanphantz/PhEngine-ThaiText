@@ -14,7 +14,7 @@ namespace ThaiStringTokenizer.Handlers
         bool isWordFound;
         char firstCharacter;
         
-        public override int HandleCharacter(List<string> resultWords, char[] characters, int index)
+        public override int HandleCharacter(List<StringBuilder> resultWords, char[] characters, int index)
         {
             firstCharacter = characters[index];
             resultWord.Clear();
@@ -26,7 +26,7 @@ namespace ThaiStringTokenizer.Handlers
             
             if (HandlePreviousWord(resultWords))
             {
-                Append(resultWords, resultWord.ToString());
+                Append(resultWords);
                 return index;
             }
             
@@ -36,14 +36,6 @@ namespace ThaiStringTokenizer.Handlers
                 for (int j = index + 1; j < count; j++)
                 {
                     var currentCharacter = characters[j];
-                    // if (ThaiUnicodeCharacter.PrependVowels.Contains(currentCharacter))
-                    // {
-                    //     isWordFound = true;
-                    //     index = j-1;
-                    //     resultWord.Clear();
-                    //     resultWord.Append(moreCharacters);
-                    //     break;
-                    // }
                     moreCharacters.Append(currentCharacter);
                     if (dicWords.Contains(moreCharacters.ToString()))
                     {
@@ -57,11 +49,11 @@ namespace ThaiStringTokenizer.Handlers
                         break;
                 }
             }
-            HandleResultWords(resultWords, resultWord.ToString(), isWordFound);
+            HandleResultWords(resultWords);
             return index;
         }
 
-        private bool HandlePreviousWord(List<string> resultWords)
+        private bool HandlePreviousWord(List<StringBuilder> resultWords)
         {
             var lastResultIndex = resultWords.Count - 1;
             if (lastResultIndex < 0) 
@@ -73,29 +65,29 @@ namespace ThaiStringTokenizer.Handlers
             return IsRequiredSpelling(lastCharacter);
         }
 
-        private void HandleResultWords(List<string> resultWords, string resultWord, bool isWordFound)
+        private void HandleResultWords(List<StringBuilder> resultWords)
         {
             if (isWordFound)
             {
-                resultWords.Add(resultWord);
+                resultWords.Add(new StringBuilder().Append(resultWord));
             }
             else
             {
-                Append(resultWords, resultWord);
+                Append(resultWords);
             }
         }
 
-        static void Append(List<string> resultWords, string resultWord)
+        void Append(List<StringBuilder> resultWords)
         {
             var lastResultIndex = resultWords.Count - 1;
             var previousWord = resultWords.Count == 0 ? resultWord : resultWords[lastResultIndex];
-            if (string.IsNullOrWhiteSpace(previousWord) || resultWords.Count == 0)
+            if (previousWord.Length == 0 || resultWords.Count == 0)
             {
-                resultWords.Add(resultWord);
+                resultWords.Add(new StringBuilder().Append(resultWord));
             }
             else
             {
-                resultWords[lastResultIndex] += resultWord;
+                resultWords[lastResultIndex].Append(resultWord);
             }
         }
 

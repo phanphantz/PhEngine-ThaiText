@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text;
 
 namespace ThaiStringTokenizer.Handlers
 {
@@ -10,6 +11,6 @@ namespace ThaiStringTokenizer.Handlers
 
         bool IsMatch(char character);
 
-        int HandleCharacter(List<string> resultWords, char[] characters, int index);
+        int HandleCharacter(List<StringBuilder> resultWords, char[] characters, int index);
     }
 }

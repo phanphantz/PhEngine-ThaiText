@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text;
 
 namespace ThaiStringTokenizer.Handlers
 {
@@ -7,8 +8,8 @@ namespace ThaiStringTokenizer.Handlers
         public virtual Dictionary<char, HashSet<string>> Dictionary { get; set; } = new Dictionary<char, HashSet<string>>();
 
         public virtual MatchingMode MatchingMode { get; set; }
-
-        public virtual int HandleCharacter(List<string> resultWords, char[] characters, int index)
+        
+        public virtual int HandleCharacter(List<StringBuilder> resultWords, char[] characters, int index)
         {
             var resultWord = characters[index].ToString();
 
@@ -25,8 +26,7 @@ namespace ThaiStringTokenizer.Handlers
                 }
             }
 
-            resultWords.Add(resultWord);
-
+            resultWords.Add(new StringBuilder(resultWord));
             return index;
         }
 

@@ -1,12 +1,13 @@
 using System.Collections.Generic;
+using System.Text;
 
 namespace ThaiStringTokenizer.Handlers
 {
     public class UnknownCharacterHandler : CharacterHandlerBase, ICharacterHandler
     {
-        public override int HandleCharacter(List<string> resultWords, char[] characters, int index)
+        public override int HandleCharacter(List<StringBuilder> resultWords, char[] characters, int index)
         {
-            resultWords.Add(characters[index].ToString());
+            resultWords.Add(new StringBuilder(characters[index].ToString()));
 
             return index;
         }

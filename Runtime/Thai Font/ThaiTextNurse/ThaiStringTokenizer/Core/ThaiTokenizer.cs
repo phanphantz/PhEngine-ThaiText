@@ -33,9 +33,9 @@ namespace ThaiStringTokenizer
             return result.ToString();
         }
 
-        public List<string> Split(string input)
+        public List<StringBuilder> Split(string input)
         {
-            var resultWords = new List<string>();
+            var resultWords = new List<StringBuilder>();
             var handlers = GetCharacterHandlers();
 
             var inputWordChars = input.ToCharArray();
@@ -60,29 +60,29 @@ namespace ThaiStringTokenizer
             return AnalyzeWords(resultWords);
         }
 
-        private List<string> AnalyzeWords(List<string> resultWords)
+        private List<StringBuilder> AnalyzeWords(List<StringBuilder> resultWords)
         {
             if (!PreferDecodableWord) { return resultWords; }
 
-            var finalResults = new List<string>();
+            var finalResults = new List<StringBuilder>();
             var resultLength = resultWords.Count;
 
             for (int i = 0; i < resultLength; i++)
             {
                 var word = resultWords[i];
-                var isWordFound = Words.Contains(word);
-                var isSpace = string.IsNullOrWhiteSpace(word);
+                var isWordFound = Words.Contains(word.ToString());
+                var isSpace = string.IsNullOrWhiteSpace(word.ToString());
 
                 if (isWordFound || isSpace)
                 {
-                    finalResults.Add(word);
+                    finalResults.Add(new StringBuilder(word.ToString()));
                     continue;
                 }
 
                 var lastFinalResultIndex = finalResults.Count - 1;
                 if (lastFinalResultIndex < 0)
                 {
-                    finalResults.Add(word);
+                    finalResults.Add(new StringBuilder(word.ToString()));
                     continue;
                 }
 
@@ -92,7 +92,7 @@ namespace ThaiStringTokenizer
 
                 if (isMergeWordFound)
                 {
-                    finalResults[lastFinalResultIndex] += word;
+                    finalResults[lastFinalResultIndex].Append(word);
                     continue;
                 }
 
@@ -100,51 +100,6 @@ namespace ThaiStringTokenizer
             }
 
             return finalResults;
-        }
-
-        public List<string> SubThaiString(string input, int length)
-        {
-            var lines = new List<string>();
-            var line = "";
-            var lineCount = 0;
-            var words = Split(input);
-            var lastIndex = words.Count - 1;
-
-            for (var i = 0; i <= lastIndex; i++)
-            {
-                var word = words[i];
-
-                var consonant = new ThaiStringResponse { Words = word };
-                lineCount += consonant.Countable;
-
-                if (lineCount < length)
-                {
-                    line += word;
-
-                    if (i != lastIndex) { continue; }
-
-                    lines.Add(line);
-                }
-                else if (lineCount == length)
-                {
-                    line += word;
-                    lines.Add(line);
-                    lineCount = 0;
-                    line = "";
-                }
-                else
-                {
-                    lines.Add(line);
-                    lineCount = consonant.Countable;
-                    line = word;
-
-                    if (i != lastIndex) { continue; }
-
-                    lines.Add(line);
-                }
-            }
-
-            return lines;
         }
     }
 }
