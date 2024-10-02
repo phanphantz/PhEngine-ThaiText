@@ -12,7 +12,7 @@ namespace ThaiStringTokenizer.Characters
                 characters.AddRange(Vowels);
                 //characters.AddRange(CurrencySymbol);
                 characters.AddRange(VowelLengthSign);
-                characters.AddRange(RepetitionMark);
+                //characters.AddRange(RepetitionMark);
                 characters.AddRange(ToneMarks);
                 //characters.AddRange(Signs);
                 //characters.AddRange(Digits);

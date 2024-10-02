@@ -42,21 +42,6 @@ namespace ThaiStringTokenizer.Handlers
                         continue;
 
                     moreCharacters = characters.Substring(startIndex, (j - startIndex) + 1);
-
-                    /*
-                   //End the word immediately if repetition marks are found
-                   if (ThaiUnicodeCharacter.RepetitionMark.Contains(currentChar) && wordCount <= 1)
-                   {
-                       index = Found(j);
-                       break;
-                   }
-                   //This can be a short word
-                   if (ThaiUnicodeCharacter.PostpendVowelsUnrequiredSpelling.Contains(currentChar) && wordCount == 0)
-                   {
-                       index = Found(j);
-                       continue;
-                    }
-                    */
                     if (dicWords.Contains(moreCharacters))
                     {
                         index = Found(j);
