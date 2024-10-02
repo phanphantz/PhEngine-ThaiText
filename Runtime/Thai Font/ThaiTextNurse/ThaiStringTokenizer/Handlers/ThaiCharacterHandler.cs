@@ -13,7 +13,7 @@ namespace ThaiStringTokenizer.Handlers
         int wordCount;
         bool isWordFound;
         char firstCharacter;
-        
+
         public override int HandleCharacter(List<StringBuilder> resultWords, string characters, int index)
         {
             var startIndex = index;
@@ -22,39 +22,68 @@ namespace ThaiStringTokenizer.Handlers
             resultWord.Append(firstCharacter);
             isWordFound = false;
             wordCount = 0;
-            
+
             if (HandlePreviousWord(resultWords))
             {
                 Append(resultWords);
                 return index;
             }
-            
+
             if (Dictionary.TryGetValue(firstCharacter, out var dicWords))
             {
                 count = characters.Length;
                 for (int j = index + 1; j < count; j++)
                 {
-                    moreCharacters = characters.Substring(startIndex, (j-startIndex)+1);
+                    var currentChar = characters[j];
+                    // prepend vowels cannot be alone after first position, skip to the next char
+                    if (ThaiUnicodeCharacter.PrependVowels.Contains(currentChar))
+                        continue;
+                    if (IsRequiredSpelling(currentChar))
+                        continue;
+
+                    moreCharacters = characters.Substring(startIndex, (j - startIndex) + 1);
+
+                    /*
+                   //End the word immediately if repetition marks are found
+                   if (ThaiUnicodeCharacter.RepetitionMark.Contains(currentChar) && wordCount <= 1)
+                   {
+                       index = Found(j);
+                       break;
+                   }
+                   //This can be a short word
+                   if (ThaiUnicodeCharacter.PostpendVowelsUnrequiredSpelling.Contains(currentChar) && wordCount == 0)
+                   {
+                       index = Found(j);
+                       continue;
+                    }
+                    */
                     if (dicWords.Contains(moreCharacters))
                     {
-                        isWordFound = true;
-                        index = j;
-                        resultWord.Clear();
-                        wordCount++;
-                        resultWord.Append(moreCharacters);
+                        index = Found(j);
                     }
-                    if ((MatchingMode == MatchingMode.Shortest && isWordFound) || wordCount >= 3) 
+
+                    if ((MatchingMode == MatchingMode.Shortest && isWordFound) || wordCount >= 3)
                         break;
                 }
             }
+
             HandleResultWords(resultWords);
             return index;
         }
 
-        private bool HandlePreviousWord(List<StringBuilder> resultWords)
+        int Found(int j)
+        {
+            isWordFound = true;
+            resultWord.Clear();
+            resultWord.Append(moreCharacters);
+            wordCount++;
+            return j;
+        }
+
+        bool HandlePreviousWord(List<StringBuilder> resultWords)
         {
             var lastResultIndex = resultWords.Count - 1;
-            if (lastResultIndex < 0) 
+            if (lastResultIndex < 0)
                 return false;
 
             var previousWord = resultWords[lastResultIndex];
@@ -63,7 +92,7 @@ namespace ThaiStringTokenizer.Handlers
             return IsRequiredSpelling(lastCharacter);
         }
 
-        private void HandleResultWords(List<StringBuilder> resultWords)
+        void HandleResultWords(List<StringBuilder> resultWords)
         {
             if (isWordFound)
             {
@@ -89,7 +118,8 @@ namespace ThaiStringTokenizer.Handlers
             }
         }
 
-        private bool IsRequiredSpelling(char character) => ThaiUnicodeCharacter.PostpendVowelsRequiredSpelling.Contains(character);
+        private bool IsRequiredSpelling(char character) =>
+            ThaiUnicodeCharacter.PostpendVowelsRequiredSpelling.Contains(character);
 
         public override bool IsMatch(char character) => ThaiUnicodeCharacter.Characters.Contains(character);
     }

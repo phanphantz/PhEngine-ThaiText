@@ -10,10 +10,9 @@ namespace ThaiStringTokenizer.Characters
             {
                 var characters = Consonants;
                 characters.AddRange(Vowels);
-                characters.AddRange(Sign);
                 //characters.AddRange(CurrencySymbol);
                 characters.AddRange(VowelLengthSign);
-                //characters.AddRange(RepetitionMark);
+                characters.AddRange(RepetitionMark);
                 characters.AddRange(ToneMarks);
                 //characters.AddRange(Signs);
                 //characters.AddRange(Digits);
@@ -133,9 +132,7 @@ namespace ThaiStringTokenizer.Characters
             0x0e36, //  ึ
             0x0e38, //  ุ
             0x0e39, //  ู
-            0x0e3a, //  ฺ   =>  ธมฺมํ
             0x0e4c, //  ์
-            0x0e4d, //  ํ   =>  ธมฺมํ
             0x0e47 //   ็
         };
 
@@ -153,10 +150,8 @@ namespace ThaiStringTokenizer.Characters
             0x0e43, //  ใ
             0x0e44, //  ไ
         };
-        public static List<int> Sign => new List<int> { 0x0e2f }; //ฯ
-        public static List<int> CurrencySymbol => new List<int> { 0x0e3f }; //฿
         public static List<int> VowelLengthSign => new List<int> { 0x0e45 }; //ฤา (สระ า หางยาว)
-        public static List<int> RepetitionMark => new List<int> { 0x0e46 }; //ๆ
+        public static List<int> RepetitionMark => new List<int> { 0x0e46 }; //ๆ //ฯ // ,0x0e2f
 
         public static List<int> ToneMarks => new List<int>
         {
@@ -165,14 +160,7 @@ namespace ThaiStringTokenizer.Characters
             0x0e4a, //  ๊
             0x0e4b  //  ๋
         };
-
-        public static List<int> Signs => new List<int>
-        {
-            0x0e4e, //      => not use
-            0x0e4f, //      => not use
-            0x0e5a, //      => not use
-            0x0e5b //       => not use
-        };
+        
         // ๐๑๒๓๔๕๖๗๘๙
         public static List<int> Digits => new List<int>
         {
