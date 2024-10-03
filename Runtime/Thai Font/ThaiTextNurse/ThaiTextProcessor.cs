@@ -42,7 +42,7 @@ namespace PhEngine.ThaiTMP
             if (!TryGetDictionary(out var dictionaryContent))
                 return thaiText;
             
-            //return LexTo.Instance.InsertLineBreaks(thaiText, '\u200b');
+            //return LexTo.Instance.InsertLineBreaks(thaiText, '/');
             tokenizer ??= new ThaiTokenizer(dictionaryContent, options);
             return tokenizer.GetTokenizedString(thaiText);
         }

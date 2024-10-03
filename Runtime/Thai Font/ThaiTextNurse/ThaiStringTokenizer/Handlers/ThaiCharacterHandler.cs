@@ -8,18 +8,21 @@ namespace ThaiStringTokenizer.Handlers
     public class ThaiCharacterHandler : CharacterHandlerBase, ICharacterHandler
     {
         private StringBuilder resultWord = new StringBuilder();
-        private string moreCharacters;
+        private StringBuilder moreCharacters = new StringBuilder();
         int count;
         int wordCount;
         bool isWordFound;
+        bool isPostprendFound;
         char firstCharacter;
 
         public override int HandleCharacter(List<StringBuilder> resultWords, string characters, int index)
         {
-            var startIndex = index;
             firstCharacter = characters[index];
+            moreCharacters.Clear();
             resultWord.Clear();
             resultWord.Append(firstCharacter);
+            moreCharacters.Append(firstCharacter);
+            isPostprendFound = false;
             isWordFound = false;
             wordCount = 0;
 
@@ -35,19 +38,20 @@ namespace ThaiStringTokenizer.Handlers
                 for (int j = index + 1; j < count; j++)
                 {
                     var currentChar = characters[j];
-                    // prepend vowels cannot be alone after first position, skip to the next char
-                    if (ThaiUnicodeCharacter.PrependVowels.Contains(currentChar))
-                        continue;
+                    moreCharacters.Append(currentChar);
                     if (IsRequiredSpelling(currentChar))
                         continue;
-
-                    moreCharacters = characters.Substring(startIndex, (j - startIndex) + 1);
-                    if (dicWords.Contains(moreCharacters))
+                    // prepend vowels cannot be alone after first position, skip to the next char
+                    if (IsPrepend(currentChar))
+                        continue;
+                    
+                    var currentText = moreCharacters.ToString();
+                    if (dicWords.Contains(currentText))
                     {
                         index = Found(j);
+                        isPostprendFound = false;
                     }
-
-                    if ((MatchingMode == MatchingMode.Shortest && isWordFound) || wordCount >= 3)
+                    if ((MatchingMode == MatchingMode.Shortest && isWordFound))
                         break;
                 }
             }
@@ -73,7 +77,7 @@ namespace ThaiStringTokenizer.Handlers
 
             var previousWord = resultWords[lastResultIndex];
             var wordLength = previousWord.Length;
-            var lastCharacter = Convert.ToChar(previousWord[wordLength - 1]);
+            var lastCharacter = previousWord[wordLength - 1];
             return IsRequiredSpelling(lastCharacter);
         }
 
@@ -103,9 +107,30 @@ namespace ThaiStringTokenizer.Handlers
             }
         }
 
-        private bool IsRequiredSpelling(char character) =>
-            ThaiUnicodeCharacter.PostpendVowelsRequiredSpelling.Contains(character);
-
+        private bool IsRequiredSpelling(char character) => character is '\u0E31' or '\u0E37';
+        private bool IsPrepend(char character)
+        {
+            return character == '\u0E40' || // เ
+                   character == '\u0E41' || // แ
+                   character == '\u0E42' || // โ
+                   character == '\u0E43' || // ใ
+                   character == '\u0E44';   // ไ
+        }
+        
+        private bool IsPostpend(char character)
+        {
+            return character == '\u0E30' || // ะ
+                   character == '\u0E32' || // า
+                   character == '\u0E33' || // ำ
+                   character == '\u0E34' || // ิ
+                   character == '\u0E35' || // ี
+                   character == '\u0E36' || // ึ
+                   character == '\u0E38' || // ุ
+                   character == '\u0E39' || // ู
+                   character == '\u0E4C' || // ์
+                   character == '\u0E47';   // ็
+        }
+        
         public override bool IsMatch(char character) => ThaiUnicodeCharacter.Characters.Contains(character);
     }
 }

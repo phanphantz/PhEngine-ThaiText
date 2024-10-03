@@ -142,7 +142,7 @@ namespace ThaiStringTokenizer.Characters
             0x0e37, //  ื
         };
 
-        public static List<int> PrependVowels => new List<int>
+        public static HashSet<int> PrependVowels => new HashSet<int>
         {
             0x0e40, //  เ
             0x0e41, //  แ

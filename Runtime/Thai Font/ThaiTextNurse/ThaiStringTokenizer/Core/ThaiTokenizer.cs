@@ -28,7 +28,8 @@ namespace ThaiStringTokenizer
             foreach (var word in splitResultList)
             {
                 result.Append(word);
-                result.Append(Separator);
+                //result.Append(Separator);
+                result.Append("/"+Separator);
             }
             return result.ToString();
         }
