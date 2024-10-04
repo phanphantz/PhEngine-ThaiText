@@ -1,4 +1,5 @@
-﻿using Lexto;
+﻿using System.Text;
+using Lexto;
 using TMPro;
 using UnityEngine;
 
@@ -60,6 +61,7 @@ namespace PhEngine.ThaiTMP
             Debug.Log("Start Process");
             lastKnownText = text;
             isDirty = false;
+            lastProcessedText = text;
             if (isCorrectGlyphs)
                 lastProcessedText = ThaiFontAdjuster.Adjust(text);
 
