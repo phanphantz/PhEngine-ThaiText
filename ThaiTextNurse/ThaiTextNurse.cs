@@ -79,7 +79,7 @@ namespace PhEngine.ThaiTMP
                 if (textAsset == null)
                     return lastProcessedText;
                 
-                tokenizer = new PhunTokenizer(textAsset.text.Split('\n'));
+                tokenizer = new PhunTokenizer(textAsset.text.Split(System.Environment.NewLine));
                 Resources.UnloadAsset(textAsset);
             }
             lastProcessedText = string.Join(finalSeparator,tokenizer.Tokenize(text));
@@ -89,7 +89,7 @@ namespace PhEngine.ThaiTMP
         [ContextMenu(nameof(RebuildDict))]
         public void RebuildDict()
         {
-            LexTo.Instance.TryInitialize();
+            Clear();
             NotifyChange();
         }
 

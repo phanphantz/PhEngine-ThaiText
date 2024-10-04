@@ -84,7 +84,6 @@ namespace PhEngine.ThaiTMP
                                 //We've found something recognizable again
                                 break;
                             }
-                            Debug.Log("while");
                         }
                         longestMatch = input.Substring(i, j - i);
                         break;
@@ -109,7 +108,6 @@ namespace PhEngine.ThaiTMP
                                 break;
                             }
                             j++;
-                            Debug.Log("while");
                         }
                         longestMatch = input.Substring(i, j - i);
                         break;
