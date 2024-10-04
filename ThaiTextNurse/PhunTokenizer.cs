@@ -147,9 +147,9 @@ namespace PhEngine.ThaiTMP
         static bool IsShouldNotTokenize(char c)
         {
             return ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) ||
-                   (c >= '๐' && c <= '๙') || char.IsDigit(c) ||
-                   (c == '~' || c == 'ๆ' || c == 'ฯ' || c == '“' || c == '”' || c == ',')
-                   || (char.IsWhiteSpace(c));
+                   (c >= '๐' && c <= '๙') || (c >= '0' && c <= '9')||
+                   (c == '~' || c == 'ๆ' || c == 'ฯ' || c == '“' || c == '”' || c == ',' || c =='.')
+                   || c == ' ' || c == '\n' || c == '\r' || c == '\t';
         }
 
         static bool IsOpenBracket(char c)
