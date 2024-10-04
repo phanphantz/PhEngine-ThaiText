@@ -13,6 +13,7 @@ namespace PhEngine.ThaiTMP
         [SerializeField] string separator;
         [SerializeField, HideInInspector] string lastKnownText;
         [SerializeField, HideInInspector] string lastProcessedText;
+        static PhunTokenizer tokenizer;
 
         bool isDirty;
 
@@ -71,8 +72,17 @@ namespace PhEngine.ThaiTMP
 
             if (string.IsNullOrEmpty(finalSeparator))
                 return lastProcessedText;
-            
-            lastProcessedText = LexTo.Instance.InsertLineBreaks(text, finalSeparator);
+
+            if (tokenizer == null)
+            {
+                var textAsset = Resources.Load<TextAsset>("dictionary");
+                if (textAsset == null)
+                    return lastProcessedText;
+                
+                tokenizer = new PhunTokenizer(textAsset.text.Split('\n'));
+                Resources.UnloadAsset(textAsset);
+            }
+            lastProcessedText = string.Join(finalSeparator,tokenizer.Tokenize(text));
             return lastProcessedText;
         }
 
@@ -81,6 +91,12 @@ namespace PhEngine.ThaiTMP
         {
             LexTo.Instance.TryInitialize();
             NotifyChange();
+        }
+
+        [ContextMenu(nameof(Clear))]
+        public void Clear()
+        {
+            tokenizer = null;
         }
     }
 }
