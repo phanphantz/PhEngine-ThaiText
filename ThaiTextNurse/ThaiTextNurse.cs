@@ -1,13 +1,9 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
-
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
+using UnityEngine.Serialization;
 
 namespace PhEngine.ThaiTMP
 {
@@ -46,7 +42,8 @@ namespace PhEngine.ThaiTMP
             }
         }
         [SerializeField] string separator;
-        
+
+        public TMP_Text TextComponent => tmpText;
         [SerializeField] TMP_Text tmpText;
         [SerializeField, HideInInspector] string lastKnownText;
         
@@ -54,9 +51,11 @@ namespace PhEngine.ThaiTMP
         [SerializeField, HideInInspector] string outputString;
         
         public int LastWordCount => lastWordCount;
+        public int CharacterInfoLength => tmpText.textInfo.characterInfo.Length;
+
         [SerializeField, HideInInspector] int lastWordCount;
         
-        public bool isVisualizeWordBreaks = true;
+        public bool isVisualizeInEditor = true;
         public Color guiColor = new Color(0f, 0.5f, 0.8f);
         
         static BaengPhunTokenizer tokenizer;
@@ -125,68 +124,22 @@ namespace PhEngine.ThaiTMP
             }
             return outputString;
         }
-
-#if UNITY_EDITOR
-        void OnDrawGizmos()
-        {
-            if (!isVisualizeWordBreaks)
-                return;
-            
-            if (string.IsNullOrEmpty(outputString))
-                return;
-            
-            var settings = ThaiTextNurseSettings.PrepareInstance();
-            var breakCharacter = GetWordBreakCharacter(settings);
-            if (string.IsNullOrEmpty(breakCharacter))
-                return;
-            
-            var breakIndices = new List<int>();
-            for (int i = 0; i < outputString.Length; i++)
-            {
-                if (outputString[i] == breakCharacter[0])
-                    breakIndices.Add(i);
-            }
-            var oldColor = Handles.color;
-            var color = guiColor;
-            color.a = 0.75f;
-            Handles.color = color;
-            var widthScale = transform.lossyScale.x;
-            
-            // 0.1f seems to be a magic number that makes the height scale looks correct for Worldspace texts.
-            // Why? I don't know... Unity magic?
-            var heightScale = transform.lossyScale.y * (tmpText is TextMeshProUGUI ? 1f : 0.1f); 
-            foreach (int index in breakIndices)
-            {
-                var charInfo = GetCharacterInfo(index);
-                if (charInfo.character == '<')
-                {
-                    var i = index;
-                    i++;
-                    while (i < tmpText.textInfo.characterInfo.Length)
-                    {
-                        var character = GetCharacterInfo(i).character;
-                        if (character == '>')
-                        {
-                            break;
-                        }
-                        else if (character == '<')
-                        {
-                            
-                        }
-                    }
-                }
-                Vector3 pos = transform.TransformPoint(charInfo.bottomRight);
-                float lineHeight = charInfo.pointSize * heightScale;
-                Handles.DrawLine(pos, pos + Vector3.up * lineHeight, 3f * widthScale);
-            }
-            Handles.color = oldColor;
-        }
-
-        TMP_CharacterInfo GetCharacterInfo(int index)
+        
+        public TMP_CharacterInfo GetCharacterInfo(int index)
         {
             return tmpText.textInfo.characterInfo[index];
         }
-#endif
+
+        public bool IsShouldDrawGizmos()
+        {
+            if (!isVisualizeInEditor || !isTokenize || !enabled)
+                return false;
+
+            if (string.IsNullOrEmpty(tmpText.text))
+                return false;
+            
+            return true;
+        }
         
         #region Static Methods
         
@@ -233,7 +186,7 @@ namespace PhEngine.ThaiTMP
             return true;
         }
 
-        static string GetWordBreakCharacter(ThaiTextNurseSettings settings)
+        public static string GetWordBreakCharacter(ThaiTextNurseSettings settings)
         {
             return settings ? settings.WordBreakCharacter : "​";
         }
