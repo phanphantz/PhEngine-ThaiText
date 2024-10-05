@@ -1,5 +1,3 @@
-﻿using System.Text;
-using Lexto;
 using TMPro;
 using UnityEngine;
 
@@ -13,7 +11,7 @@ namespace PhEngine.ThaiTMP
         [SerializeField] bool isTokenize;
         [SerializeField] string separator;
         [SerializeField, HideInInspector] string lastKnownText;
-        [SerializeField, HideInInspector] string lastProcessedText;
+        [SerializeField, HideInInspector] string displayedString;
         static PhunTokenizer tokenizer;
 
         bool isDirty;
@@ -22,6 +20,7 @@ namespace PhEngine.ThaiTMP
         {
             if (tmpText == null)
                 tmpText = GetComponent<TMP_Text>();
+            isDirty = true;
         }
 
         void OnEnable()
@@ -56,36 +55,41 @@ namespace PhEngine.ThaiTMP
         public string PreprocessText(string text)
         {
             if (lastKnownText == text && !isDirty)
-                return lastProcessedText;
+                return displayedString;
             
-            Debug.Log("Start Process");
+            Debug.Log("Process");
             lastKnownText = text;
             isDirty = false;
-            lastProcessedText = text;
+            return RebuildDisplayString(text);
+        }
+
+        string RebuildDisplayString(string text)
+        {
+            displayedString = text;
             if (isCorrectGlyphs)
-                lastProcessedText = ThaiFontAdjuster.Adjust(text);
+                displayedString = ThaiFontAdjuster.Adjust(text);
 
             if (!isTokenize)
-                return lastProcessedText;
+                return displayedString;
 
             var finalSeparator = separator;
             if (tmpText.enableWordWrapping)
                 finalSeparator += "​";
 
             if (string.IsNullOrEmpty(finalSeparator))
-                return lastProcessedText;
+                return displayedString;
 
             if (tokenizer == null)
             {
                 var textAsset = Resources.Load<TextAsset>("dictionary");
                 if (textAsset == null)
-                    return lastProcessedText;
+                    return displayedString;
                 
                 tokenizer = new PhunTokenizer(textAsset.text.Split(System.Environment.NewLine));
                 Resources.UnloadAsset(textAsset);
             }
-            lastProcessedText = string.Join(finalSeparator,tokenizer.Tokenize(text));
-            return lastProcessedText;
+            displayedString = string.Join(finalSeparator,tokenizer.Tokenize(text));
+            return displayedString;
         }
 
         [ContextMenu(nameof(RebuildDict))]
