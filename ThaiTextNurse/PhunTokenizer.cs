@@ -128,7 +128,8 @@ namespace PhEngine.ThaiTMP
                         matchLength++;
                         if (currentNode.IsEndOfWord)
                         {
-                            if (j >= length - 1 || !IsFollowingThaiGlyph(input[j + 1]))
+                            //If the next character is a follower character, we definitely want to wait for it
+                            if (HasNoFollower(input, j))
                             {
                                 if (wasOpenBracket)
                                 {
@@ -153,13 +154,26 @@ namespace PhEngine.ThaiTMP
                 }
                 else
                 {
-                    // If no match, add single character
-                    tokens.Add(input[i].ToString()); 
-                    i++;
+                    // No match
+                    if (HasNoFollower(input, i))
+                    {
+                        tokens.Add(input[i].ToString()); 
+                        i++;
+                    }
+                    else
+                    {
+                        tokens.Add(input.Substring(i , 2)); 
+                        i+=2;
+                    }
                 }
             }
 
             return tokens;
+        }
+
+        static bool HasNoFollower(string input, int currentIndex)
+        {
+            return currentIndex >= input.Length - 1 || !IsFollowingThaiGlyph(input[currentIndex + 1]);
         }
 
         static bool IsShouldNotTokenize(char c)
