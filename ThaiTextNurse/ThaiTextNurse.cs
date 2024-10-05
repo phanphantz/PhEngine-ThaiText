@@ -1,8 +1,13 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace PhEngine.ThaiTMP
 {
@@ -29,7 +34,7 @@ namespace PhEngine.ThaiTMP
                 NotifyChange();
             }
         }
-        [SerializeField] bool isTokenize;
+        [SerializeField] bool isTokenize = true;
         
         public string Separator
         {
@@ -51,7 +56,10 @@ namespace PhEngine.ThaiTMP
         public int LastWordCount => lastWordCount;
         [SerializeField, HideInInspector] int lastWordCount;
         
-        static PhunTokenizer tokenizer;
+        public bool isVisualizeWordBreaks = true;
+        public Color guiColor = new Color(0f, 0.5f, 0.8f);
+        
+        static BaengPhunTokenizer tokenizer;
         bool isRebuildRequired;
 
         void Awake()
@@ -118,6 +126,46 @@ namespace PhEngine.ThaiTMP
             return outputString;
         }
 
+#if UNITY_EDITOR
+        void OnDrawGizmos()
+        {
+            if (!isVisualizeWordBreaks)
+                return;
+            
+            if (string.IsNullOrEmpty(outputString))
+                return;
+            
+            var settings = ThaiTextNurseSettings.PrepareInstance();
+            var breakCharacter = GetWordBreakCharacter(settings);
+            if (string.IsNullOrEmpty(breakCharacter))
+                return;
+            
+            var breakIndices = new List<int>();
+            for (int i = 0; i < outputString.Length; i++)
+            {
+                if (outputString[i] == breakCharacter[0])
+                    breakIndices.Add(i);
+            }
+            var oldColor = Handles.color;
+            var color = guiColor;
+            color.a = 0.75f;
+            Handles.color = color;
+            var widthScale = transform.lossyScale.x;
+            
+            // 0.1f seems to be a magic number that makes the height scale looks correct for Worldspace texts.
+            // Why? I don't know... Unity magic?
+            var heightScale = transform.lossyScale.y * (tmpText is TextMeshProUGUI ? 1f : 0.1f); 
+            foreach (int index in breakIndices)
+            {
+                var charInfo = tmpText.textInfo.characterInfo[index];
+                Vector3 pos = transform.TransformPoint(charInfo.bottomRight);
+                float lineHeight = charInfo.pointSize * heightScale;
+                Handles.DrawLine(pos, pos + Vector3.up * lineHeight, 3f * widthScale);
+            }
+            Handles.color = oldColor;
+        }
+#endif
+        
         #region Static Methods
         
         public static string SafeTokenize(string input)
@@ -145,7 +193,7 @@ namespace PhEngine.ThaiTMP
             if (tokenizer == null)
                 return false;
             
-            var wordBreakCharacter = settings ? settings.WordBreakCharacter : "​";
+            var wordBreakCharacter = GetWordBreakCharacter(settings);
             var finalSeparator = tokenizeRequest.Separator;
             if (tokenizeRequest.IsBreakWords)
                 finalSeparator += wordBreakCharacter;
@@ -161,6 +209,11 @@ namespace PhEngine.ThaiTMP
             var words = tokenizer.Tokenize(input,  tokenizeRequest.IsSupportRichText);
             result = new TokenizeResult(string.Join(finalSeparator, words), words.Count);
             return true;
+        }
+
+        static string GetWordBreakCharacter(ThaiTextNurseSettings settings)
+        {
+            return settings ? settings.WordBreakCharacter : "​";
         }
 
         public static void RebuildDictionary(bool isUpdateNursesInScene = true)
@@ -244,7 +297,7 @@ namespace PhEngine.ThaiTMP
 
         static void RebuildTokenizer(TextAsset textAsset)
         {
-            tokenizer = new PhunTokenizer(WordsFromDictionary(textAsset));
+            tokenizer = new BaengPhunTokenizer(WordsFromDictionary(textAsset));
             Resources.UnloadAsset(textAsset);
             Debug.Log("[ThaiTextNurse] Dictionary Rebuild Completed!");
         }

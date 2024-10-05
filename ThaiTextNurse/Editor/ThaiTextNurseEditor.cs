@@ -32,6 +32,14 @@ namespace PhEngine.ThaiTMP.Editor
             EditorGUI.indentLevel++;
             PropertyField("separator");
             EditorGUI.indentLevel--;
+            DrawCopyToClipboardButton();
+
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Editor-Only", EditorStyles.boldLabel);
+            EditorGUI.indentLevel++;
+            PropertyField("isVisualizeWordBreaks");
+            PropertyField("guiColor");
+            EditorGUI.indentLevel--;
 
             if (GUI.changed)
             {
@@ -39,7 +47,12 @@ namespace PhEngine.ThaiTMP.Editor
                 foreach (var t in targets)
                     (t as ThaiTextNurse)?.NotifyChange();
             }
+            EditorGUILayout.Space();
+            DrawDictionarySection();
+        }
 
+        void DrawCopyToClipboardButton()
+        {
             EditorGUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
             if (GUILayout.Button("Copy Output to Clipboard", GUILayout.ExpandWidth(false)))
@@ -48,14 +61,16 @@ namespace PhEngine.ThaiTMP.Editor
                 SceneView.lastActiveSceneView.ShowNotification(new GUIContent("Copied Output to Clipboard"), 1f);
             }
             EditorGUILayout.EndHorizontal();
+        }
 
-            EditorGUILayout.Space();
+        void DrawDictionarySection()
+        {
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("Dictionary" , EditorStyles.boldLabel);
             GUILayout.FlexibleSpace();
             if (GUILayout.Button("Force Rebuild", EditorStyles.linkLabel,GUILayout.ExpandWidth(false)))
             {
-               ThaiTextNurse.RebuildDictionary();
+                ThaiTextNurse.RebuildDictionary();
             }
             EditorGUILayout.EndHorizontal();
 

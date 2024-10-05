@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace PhEngine.ThaiTMP
 {
-    public class PhunTokenizer
+    public class BaengPhunTokenizer
     {
         class TrieNode
         {
@@ -12,7 +12,7 @@ namespace PhEngine.ThaiTMP
 
         TrieNode m_Root;
 
-        public PhunTokenizer(IEnumerable<string> dictionary)
+        public BaengPhunTokenizer(IEnumerable<string> dictionary)
         {
             m_Root = new TrieNode();
             foreach (var word in dictionary)
