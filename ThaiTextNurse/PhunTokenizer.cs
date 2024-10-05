@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace PhEngine.ThaiTMP
 {
@@ -21,8 +20,7 @@ namespace PhEngine.ThaiTMP
                 AddWord(word);
             }
         }
-
-        // Add word to the Trie
+        
         void AddWord(string word)
         {
             var currentNode = m_Root;
@@ -37,8 +35,13 @@ namespace PhEngine.ThaiTMP
             currentNode.IsEndOfWord = true;
         }
 
-        // Tokenize the input text by finding the longest match in the dictionary
-        public List<string> Tokenize(string input)
+        /// <summary>
+        ///  Tokenize the input text by finding the longest match in the dictionary
+        /// </summary>
+        /// <param name="input">original text</param>
+        /// <param name="isSupportRichTextTags"></param>
+        /// <returns></returns>
+        public List<string> Tokenize(string input, bool isSupportRichTextTags)
         {
             var tokens = new List<string>();
             int i = 0;
@@ -55,8 +58,7 @@ namespace PhEngine.ThaiTMP
                     if (IsOpenBracket(c))
                         continue;
                     
-                    //Cut after close bracket
-                    if (IsCloseBracket(c))
+                    if (IsCloseBracket(c) || c == 'ๆ' || c == 'ฯ')
                     {
                         longestMatch = input.Substring(i, j - i+1);
                         break;
@@ -90,12 +92,13 @@ namespace PhEngine.ThaiTMP
                     }
                     
                     //Try check for Rich Text Tags
-                    if (c == '<')
+                    if (isSupportRichTextTags && c == '<')
                     {
                         var k = j;
                         j++;
                         while (j < length)
                         {
+                            //Keep going until the tag is closed or invalid
                             c = input[j];
                             if (c == '>')
                             {
@@ -104,6 +107,7 @@ namespace PhEngine.ThaiTMP
                             }
                             if (c == '<' || j >= length)
                             {
+                                //Invalid tag, revert to character after open bracket
                                 j = k+1;
                                 break;
                             }
@@ -146,6 +150,7 @@ namespace PhEngine.ThaiTMP
 
         static bool IsShouldNotTokenize(char c)
         {
+            // Avoid IsDigit() and IsWhiteSpace() to gain more performance
             return ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) ||
                    (c >= '๐' && c <= '๙') || (c >= '0' && c <= '9')||
                    (c == '~' || c == 'ๆ' || c == 'ฯ' || c == '“' || c == '”' || c == ',' || c =='.')
