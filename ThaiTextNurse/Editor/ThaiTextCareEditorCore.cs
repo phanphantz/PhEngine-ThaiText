@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
 
@@ -26,19 +24,21 @@ namespace PhEngine.ThaiTMP.Editor
 
             var assetPath = AssetDatabase.GetAssetPath(textAsset);
             var inputWords = GetWords(pendingWords);
-            var successCount = 0;
+            var succeedList = new List<string>();
             var dictionaryWordList = new List<string>(ThaiTextNurse.WordsFromDictionary(textAsset));
             foreach (var word in inputWords)
             {
                 if (!dictionaryWordList.Contains(word))
                 {
                     dictionaryWordList.Add(word);
-                    successCount++;
+                    succeedList.Add(word);
                 }
             }
             var content = string.Join(System.Environment.NewLine, dictionaryWordList);
             SaveDictionaryAndRebuild(assetPath, content);
-            SceneView.lastActiveSceneView.ShowNotification(new GUIContent("Added New " + successCount + " Words"), 1f);
+            var message = succeedList.Count == 1 ? "Added '" + succeedList.FirstOrDefault() + "'" : "Added " + succeedList.Count + " New Words";
+            Debug.Log("Added: " + string.Join(", ", succeedList));
+            SceneView.lastActiveSceneView.ShowNotification(new GUIContent(message), 1f);
         }
 
         static void SaveDictionaryAndRebuild(string assetPath, string content)
@@ -61,16 +61,18 @@ namespace PhEngine.ThaiTMP.Editor
 
             var assetPath = AssetDatabase.GetAssetPath(textAsset);
             var inputWords = GetWords(pendingWords);
-            var successCount = 0;
             var dictionaryWordList = new List<string>(ThaiTextNurse.WordsFromDictionary(textAsset));
+            var succeedList = new List<string>();
             foreach (var word in inputWords)
             {
                 if (dictionaryWordList.Remove(word))
-                    successCount++;
+                    succeedList.Add(word);
             }
             var content = string.Join(System.Environment.NewLine, dictionaryWordList);
             SaveDictionaryAndRebuild(assetPath, content);
-            SceneView.lastActiveSceneView.ShowNotification(new GUIContent("Removed " + successCount + " Words"), 1f);
+            var message = succeedList.Count == 1 ? "Removed '" + succeedList.FirstOrDefault() + "'" : "Removed " + succeedList.Count + " Words";
+            Debug.Log("Removed: " + string.Join(", ", succeedList));
+            SceneView.lastActiveSceneView.ShowNotification(new GUIContent(message), 1f);
         }
     }
 }

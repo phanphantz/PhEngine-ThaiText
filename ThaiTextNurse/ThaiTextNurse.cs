@@ -91,7 +91,7 @@ namespace PhEngine.ThaiTMP
             isRebuildRequired = false;
             
             //Sanity Check
-            Debug.Log(gameObject.name + " : Rebuild Display String");
+            //Debug.Log(gameObject.name + " : Rebuild Display String");
             return RebuildOutputString(text);
         }
 

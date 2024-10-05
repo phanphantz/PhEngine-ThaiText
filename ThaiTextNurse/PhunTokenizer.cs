@@ -128,12 +128,15 @@ namespace PhEngine.ThaiTMP
                         matchLength++;
                         if (currentNode.IsEndOfWord)
                         {
-                            if (wasOpenBracket)
+                            if (j >= length - 1 || !IsFollowingThaiGlyph(input[j + 1]))
                             {
-                                matchLength++;
-                                wasOpenBracket = false;
+                                if (wasOpenBracket)
+                                {
+                                    matchLength++;
+                                    wasOpenBracket = false;
+                                }
+                                longestMatch = input.Substring(i, matchLength);
                             }
-                            longestMatch = input.Substring(i, matchLength);
                         }
                     }
                     else
@@ -176,6 +179,18 @@ namespace PhEngine.ThaiTMP
         static bool IsCloseBracket(char c)
         {
             return c == ')' || c == '}' || c == ']';
+        }
+        
+        static bool IsFollowingThaiGlyph(char c)
+        {
+            return (c >= '\u0E30' && c <= '\u0E39') || //Thai Following Vowels
+                   c == '\u0E4C' || // ์
+                   c == '\u0E47' || // ็
+                   c == '\u0E48' || // ่
+                   c == '\u0E49' || // ้
+                   c == '\u0E4A' || // ๊
+                   c == '\u0E4B' || // ๋
+                   c == 'ๆ' || c == 'ฯ' || c == 'ๅ';
         }
     }
 }
