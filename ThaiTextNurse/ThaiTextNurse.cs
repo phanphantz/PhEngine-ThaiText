@@ -157,12 +157,34 @@ namespace PhEngine.ThaiTMP
             var heightScale = transform.lossyScale.y * (tmpText is TextMeshProUGUI ? 1f : 0.1f); 
             foreach (int index in breakIndices)
             {
-                var charInfo = tmpText.textInfo.characterInfo[index];
+                var charInfo = GetCharacterInfo(index);
+                if (charInfo.character == '<')
+                {
+                    var i = index;
+                    i++;
+                    while (i < tmpText.textInfo.characterInfo.Length)
+                    {
+                        var character = GetCharacterInfo(i).character;
+                        if (character == '>')
+                        {
+                            break;
+                        }
+                        else if (character == '<')
+                        {
+                            
+                        }
+                    }
+                }
                 Vector3 pos = transform.TransformPoint(charInfo.bottomRight);
                 float lineHeight = charInfo.pointSize * heightScale;
                 Handles.DrawLine(pos, pos + Vector3.up * lineHeight, 3f * widthScale);
             }
             Handles.color = oldColor;
+        }
+
+        TMP_CharacterInfo GetCharacterInfo(int index)
+        {
+            return tmpText.textInfo.characterInfo[index];
         }
 #endif
         
