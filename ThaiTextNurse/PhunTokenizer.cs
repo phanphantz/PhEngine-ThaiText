@@ -48,6 +48,7 @@ namespace PhEngine.ThaiTMP
             while (i < input.Length)
             {
                 string longestMatch = null;
+                bool wasOpenBracket = false;
                 bool wasThaiCharacter = false;
                 TrieNode currentNode = m_Root;
                 int matchLength = 0;
@@ -56,7 +57,10 @@ namespace PhEngine.ThaiTMP
                 {
                     char c = input[j];
                     if (IsOpenBracket(c))
+                    {
+                        wasOpenBracket = true;
                         continue;
+                    }
                     
                     if (IsCloseBracket(c) || c == 'ๆ' || c == 'ฯ')
                     {
@@ -123,7 +127,14 @@ namespace PhEngine.ThaiTMP
                         currentNode = child;
                         matchLength++;
                         if (currentNode.IsEndOfWord)
+                        {
+                            if (wasOpenBracket)
+                            {
+                                matchLength++;
+                                wasOpenBracket = false;
+                            }
                             longestMatch = input.Substring(i, matchLength);
+                        }
                     }
                     else
                     {

@@ -2,7 +2,7 @@
 {
     public class TokenizeRequest
     {
-        public TokenizeRequest(string input, string separator, bool isBreakWords, bool isSupportRichText)
+        public TokenizeRequest(string input, string separator = "", bool isBreakWords = true, bool isSupportRichText = true)
         {
             Input = input;
             Separator = separator;

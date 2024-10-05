@@ -3,7 +3,6 @@ using System.Collections;
 using System.Linq;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace PhEngine.ThaiTMP
 {
@@ -43,7 +42,7 @@ namespace PhEngine.ThaiTMP
         }
         [SerializeField] string separator;
         
-        [SerializeField, HideInInspector] TMP_Text tmpText;
+        [SerializeField] TMP_Text tmpText;
         [SerializeField, HideInInspector] string lastKnownText;
         
         public string OutputString => outputString;
@@ -119,6 +118,23 @@ namespace PhEngine.ThaiTMP
             return outputString;
         }
 
+        #region Static Methods
+        
+        public static string SafeTokenize(string input)
+        {
+            return SafeTokenize(new TokenizeRequest(input));
+        }
+
+        public static string SafeTokenize(TokenizeRequest request)
+        {
+            return TryTokenize(request, out var result) ? result.Result : request.Input;
+        }
+        
+        public static bool TryTokenize(string input, out TokenizeResult result)
+        {
+            return TryTokenize(new TokenizeRequest(input), out result);
+        }
+        
         public static bool TryTokenize(TokenizeRequest tokenizeRequest, out TokenizeResult result)
         {
             result = null;
@@ -246,6 +262,8 @@ namespace PhEngine.ThaiTMP
                     .Select(w => w.Trim())
                     .ToArray();
         }
+        
+        #endregion
     }
 
     public enum ThaiGlyphCorrection
