@@ -26,7 +26,7 @@ namespace PhEngine.ThaiTMP.Editor
             if (serializedObject.FindProperty("isTokenize").boolValue)
             {
                 GUILayout.FlexibleSpace();
-                EditorGUILayout.LabelField(nurse.LastWordCount + " Words", miniTextStyle);
+                EditorGUILayout.LabelField(nurse.LastWordCount.ToString("N0") + " Words", miniTextStyle);
             }
             EditorGUILayout.EndHorizontal();
             EditorGUI.indentLevel++;

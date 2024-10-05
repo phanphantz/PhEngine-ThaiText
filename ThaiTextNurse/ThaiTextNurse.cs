@@ -3,6 +3,7 @@ using System.Collections;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace PhEngine.ThaiTMP
 {
@@ -81,7 +82,7 @@ namespace PhEngine.ThaiTMP
             isRebuildRequired = true;
             tmpText.havePropertiesChanged = true;
         }
-
+        
         public string PreprocessText(string text)
         {
             if (lastKnownText == text && !isRebuildRequired)
@@ -91,7 +92,7 @@ namespace PhEngine.ThaiTMP
             isRebuildRequired = false;
             
             //Sanity Check
-            //Debug.Log(gameObject.name + " : Rebuild Display String");
+            Debug.Log(gameObject.name + " : Rebuild Display String");
             return RebuildOutputString(text);
         }
 
@@ -104,28 +105,46 @@ namespace PhEngine.ThaiTMP
             if (!isTokenize)
                 return outputString;
 
-            var settings = ThaiTextNurseSettings.PrepareInstance();
-            if (tokenizer == null && !TryRebuildDictionary(settings))
-                return outputString;
-            if (tokenizer == null)
-                return outputString;
-            
-            var finalSeparator = GetFinalSeparator(settings);
-            if (string.IsNullOrEmpty(finalSeparator))
-                return outputString;
-            
-            var words = tokenizer.Tokenize(text, tmpText.richText);
-            lastWordCount = words.Count;
-            outputString = string.Join(finalSeparator, words);
+            return Tokenize();
+        }
+
+        string Tokenize()
+        {
+            var request = new TokenizeRequest(outputString, separator, tmpText.enableWordWrapping, tmpText.richText);
+            if (TryTokenize(request, out var result))
+            {
+                lastWordCount = result.WordCount;
+                outputString = result.Result;
+            }
             return outputString;
         }
-        
-        string GetFinalSeparator(ThaiTextNurseSettings settings)
+
+        public static bool TryTokenize(TokenizeRequest tokenizeRequest, out TokenizeResult result)
         {
-            var finalSeparator = separator;
-            if (tmpText.enableWordWrapping)
-                finalSeparator += settings ? settings.WordBreakCharacter : "​";
-            return finalSeparator;
+            result = null;
+            var settings = ThaiTextNurseSettings.PrepareInstance();
+            if (tokenizer == null && !TryRebuildDictionary(settings))
+                return false;
+            
+            if (tokenizer == null)
+                return false;
+            
+            var wordBreakCharacter = settings ? settings.WordBreakCharacter : "​";
+            var finalSeparator = tokenizeRequest.Separator;
+            if (tokenizeRequest.IsBreakWords)
+                finalSeparator += wordBreakCharacter;
+           
+            if (string.IsNullOrEmpty(finalSeparator))
+                return false;
+
+            //Remove all existing word break characters
+            var input = tokenizeRequest.Input;
+            if (input.Contains(wordBreakCharacter))
+                input = input.Replace(wordBreakCharacter, string.Empty);
+            
+            var words = tokenizer.Tokenize(input,  tokenizeRequest.IsSupportRichText);
+            result = new TokenizeResult(string.Join(finalSeparator, words), words.Count);
+            return true;
         }
 
         public static void RebuildDictionary(bool isUpdateNursesInScene = true)
@@ -168,6 +187,7 @@ namespace PhEngine.ThaiTMP
                 onProgress?.Invoke(request.progress);
                 yield return new WaitForEndOfFrame();
             }
+            
             var textAsset = request.asset as TextAsset;
             if (textAsset == null)
             {
@@ -201,7 +221,7 @@ namespace PhEngine.ThaiTMP
             return true;
         }
 
-        public static string GetDictionaryPath(ThaiTextNurseSettings settings)
+        static string GetDictionaryPath(ThaiTextNurseSettings settings)
         {
             return settings? settings.DictionaryResourcePath : "dictionary";
         }
