@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 
@@ -160,7 +161,7 @@ namespace PhEngine.ThaiTMP
         public static IEnumerator RebuildDictionaryAsync(bool isUpdateNursesInScene = true, Action<float> onProgress = null, Action onFail = null)
         {
             var settings = ThaiTextNurseSettings.PrepareInstance();
-            var path = settings? settings.DictionaryResourcePath : "dictionary";
+            var path = GetDictionaryPath(settings);
             var request = Resources.LoadAsync<TextAsset>(path);
             while (!request.isDone)
             {
@@ -181,22 +182,49 @@ namespace PhEngine.ThaiTMP
 
         static bool TryRebuildDictionary(ThaiTextNurseSettings settings)
         {
-            var path = settings? settings.DictionaryResourcePath : "dictionary";
-            var textAsset = Resources.Load<TextAsset>(path);
+            if (!TryLoadDictionaryAsset(settings, out var textAsset)) 
+                return false;
+            
+            RebuildTokenizer(textAsset);
+            return true;
+        }
+
+        public static bool TryLoadDictionaryAsset(ThaiTextNurseSettings settings, out TextAsset textAsset)
+        {
+            var path = GetDictionaryPath(settings);
+            textAsset = Resources.Load<TextAsset>(path);
             if (textAsset == null)
             {
                 Debug.LogError("Cannot find any dictionary under Resources Folder path : " + path);
                 return false;
             }
-            RebuildTokenizer(textAsset);
             return true;
+        }
+
+        public static string GetDictionaryPath(ThaiTextNurseSettings settings)
+        {
+            return settings? settings.DictionaryResourcePath : "dictionary";
         }
 
         static void RebuildTokenizer(TextAsset textAsset)
         {
-            tokenizer = new PhunTokenizer(textAsset.text.Split(Environment.NewLine));
+            tokenizer = new PhunTokenizer(WordsFromDictionary(textAsset));
             Resources.UnloadAsset(textAsset);
             Debug.Log("[ThaiTextNurse] Dictionary Rebuild Completed!");
+        }
+
+        public static string[] WordsFromDictionary(TextAsset textAsset)
+        {
+            var content = textAsset.text;
+            
+            // Don't trust the file, Normalize all new lines to '\n'
+            content = content.Replace("\r\n", "\n").Replace("\r", "\n");
+            
+            //Ignore empty and trim all words
+            return content
+                    .Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(w => w.Trim())
+                    .ToArray();
         }
     }
 

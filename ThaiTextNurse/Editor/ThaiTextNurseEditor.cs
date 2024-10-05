@@ -8,7 +8,8 @@ namespace PhEngine.ThaiTMP.Editor
     {
         ThaiTextNurse nurse;
         GUIStyle miniTextStyle;
-
+        string pendingWords;
+        
         void OnEnable()
         {
             nurse = target as ThaiTextNurse;
@@ -47,6 +48,34 @@ namespace PhEngine.ThaiTMP.Editor
                 SceneView.lastActiveSceneView.ShowNotification(new GUIContent("Copied Output to Clipboard"), 1f);
             }
             EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.Space();
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("Dictionary" , EditorStyles.boldLabel);
+            GUILayout.FlexibleSpace();
+            if (GUILayout.Button("Force Rebuild", EditorStyles.linkLabel,GUILayout.ExpandWidth(false)))
+            {
+               ThaiTextNurse.RebuildDictionary();
+            }
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUI.indentLevel++;
+            pendingWords = EditorGUILayout.TextField("Words :",pendingWords);
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("Use whitespace to separate between words", EditorStyles.miniLabel);
+            GUILayout.FlexibleSpace();
+            if (GUILayout.Button("Remove", GUILayout.ExpandWidth(false)))
+            {
+                if (!string.IsNullOrEmpty(pendingWords))
+                    ThaiTextCareEditorCore.RemoveWordsFromDictionary(pendingWords.Trim());
+            }
+            if (GUILayout.Button("Add", GUILayout.ExpandWidth(false)))
+            {
+                if (!string.IsNullOrEmpty(pendingWords))
+                    ThaiTextCareEditorCore.AddWordsToDictionary(pendingWords.Trim());
+            }
+            EditorGUILayout.EndHorizontal();
+            EditorGUI.indentLevel--;
         }
 
         void PropertyField(string fieldName)
