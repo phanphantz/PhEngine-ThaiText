@@ -3,7 +3,6 @@ using System.Collections;
 using System.Linq;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace PhEngine.ThaiTextCare
 {
@@ -60,12 +59,20 @@ namespace PhEngine.ThaiTextCare
         
         static PhTokenizer tokenizer;
         bool isRebuildRequired;
+        [SerializeField, HideInInspector] bool isInitialized;
 
         void Awake()
         {
             if (tmpText == null)
                 tmpText = GetComponent<TMP_Text>();
             isRebuildRequired = true;
+#if UNITY_EDITOR
+            if (!isInitialized)
+            {
+                while (UnityEditorInternal.ComponentUtility.MoveComponentUp(this)){}
+                isInitialized = true;
+            }
+#endif
         }
 
         void OnEnable()

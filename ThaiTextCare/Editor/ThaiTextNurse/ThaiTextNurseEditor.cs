@@ -41,6 +41,7 @@ namespace PhEngine.ThaiTextCare.Editor
 
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
             EditorGUILayout.LabelField("Editor-Only", EditorStyles.boldLabel);
+            ThaiTextCareGUI.DrawHorizontalLine();
             PropertyField("isVisualizeInEditor");
             PropertyField("guiColor");
             if (GUI.changed)
