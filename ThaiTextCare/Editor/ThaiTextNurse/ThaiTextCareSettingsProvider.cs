@@ -17,7 +17,7 @@ namespace PhEngine.ThaiTextCare.Editor
 
         public override void OnGUI(string searchContext)
         {
-            ThaiTextCareSettingsEditor.Draw(serializedObject, settings);
+            ThaiTextCareSettingsEditor.Draw(serializedObject, settings, false);
         }
         
         public override void OnActivate(string searchContext, VisualElement rootElement)

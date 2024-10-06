@@ -16,12 +16,13 @@ namespace PhEngine.ThaiTextCare.Editor
 
         public override void OnInspectorGUI()
         {
-            Draw(serializedObject, settings);
+            Draw(serializedObject, settings, true);
         }
 
-        public static void Draw(SerializedObject serializedObject, ThaiTextCareSettings settings)
+        public static void Draw(SerializedObject serializedObject, ThaiTextCareSettings settings, bool isDrawLocationNotice)
         {
-            EditorGUILayout.LabelField("Always keep this asset under: " + Path.GetDirectoryName(ThaiTextCareSettings.SettingsPath), EditorStyles.boldLabel);
+            if (isDrawLocationNotice)
+                EditorGUILayout.LabelField("Always keep this asset under: " + Path.GetDirectoryName(ThaiTextCareSettings.SettingsPath), EditorStyles.boldLabel);
             EditorGUILayout.Space();
             
             serializedObject.UpdateIfRequiredOrScript();

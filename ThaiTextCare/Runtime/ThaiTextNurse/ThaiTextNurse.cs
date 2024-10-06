@@ -309,6 +309,7 @@ namespace PhEngine.ThaiTextCare
             return content
                     .Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries)
                     .Select(w => w.Trim())
+                    .Where(w => !w.StartsWith('/'))
                     .ToArray();
         }
         
