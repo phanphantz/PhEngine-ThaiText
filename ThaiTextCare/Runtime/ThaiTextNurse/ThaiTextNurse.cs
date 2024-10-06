@@ -118,13 +118,13 @@ namespace PhEngine.ThaiTextCare
         string RebuildOutputString(string text)
         {
             outputString = text;
+            if (isTokenize)
+                outputString = Tokenize();
+            
             if (correction != ThaiGlyphCorrection.None)
-                outputString = ThaiFontAdjuster.Adjust(text, correction);
+                outputString = ThaiFontAdjuster.Adjust(outputString, correction);
 
-            if (!isTokenize)
-                return outputString;
-
-            return Tokenize();
+            return outputString;
         }
 
         string Tokenize()

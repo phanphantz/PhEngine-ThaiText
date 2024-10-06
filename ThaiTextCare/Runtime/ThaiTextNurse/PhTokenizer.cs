@@ -170,6 +170,7 @@ namespace PhEngine.ThaiTextCare
                     }
                     else
                     {
+                        //Make sure to get all follower characters 
                         var substringLength = 2;
                         var k = i + 1;
                         while (!HasNoFollower(input, k))

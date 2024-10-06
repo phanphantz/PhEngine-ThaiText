@@ -41,13 +41,14 @@ namespace PhEngine.ThaiTextCare.Editor
             if (correction != ThaiGlyphCorrection.None)
             {
                 if (currentText.Any(c => !nurse.TextComponent.font.HasCharacter(c)))
+                {
                     EditorGUILayout.HelpBox("Your Font is missing some extended glyphs in C90 Encoding. Use FontForge to fix this", MessageType.Error);
-                
-                EditorGUILayout.BeginHorizontal();
-                GUILayout.FlexibleSpace();
-                if (GUILayout.Button("How?", GUILayout.ExpandWidth(false)))
-                    Application.OpenURL("https://fontforge.org/en-US/");
-                EditorGUILayout.EndHorizontal();
+                    EditorGUILayout.BeginHorizontal();
+                    GUILayout.FlexibleSpace();
+                    if (GUILayout.Button("How?", GUILayout.ExpandWidth(false)))
+                        Application.OpenURL("https://fontforge.org/en-US/");
+                    EditorGUILayout.EndHorizontal();
+                }
             }
             EditorGUILayout.BeginHorizontal();
             PropertyField("isTokenize");
