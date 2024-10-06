@@ -54,7 +54,7 @@ namespace PhEngine.ThaiTextCare.Editor
             if (serializedObject.FindProperty("isTokenize").boolValue)
             {
                 GUILayout.FlexibleSpace();
-                EditorGUILayout.LabelField(nurse.LastWordCount.ToString("N0") + " Words", miniTextStyle);
+                EditorGUILayout.LabelField(Selection.count == 1 ? nurse.LastWordCount.ToString("N0") + " Words" : "- Words", miniTextStyle);
             }
 
             EditorGUILayout.EndHorizontal();
@@ -81,6 +81,8 @@ namespace PhEngine.ThaiTextCare.Editor
             DrawDictionarySection();
             EditorGUILayout.EndVertical();
             EditorGUI.EndDisabledGroup();
+
+            ThaiTextCareGUI.DrawBugReportButton();
         }
 
         void DrawCopyToClipboardButton()

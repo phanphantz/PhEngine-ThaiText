@@ -16,6 +16,7 @@ namespace PhEngine.ThaiTextCare.Editor
         string pairCharacters = "";
         GUIStyle glyphPreviewStyle;
         GUIStyle combinationHeaderStyle;
+        GUIStyle largeLabelStyle;
         int selectedIndex = -1;
         Color orangeColor = new Color(0.8f, 0.5f, 0);
         
@@ -34,6 +35,14 @@ namespace PhEngine.ThaiTextCare.Editor
         public override void OnInspectorGUI()
         {
             SetupStyles();
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("Thai Font Doctor", largeLabelStyle, GUILayout.Height(40f));
+            ThaiTextCareGUI.DrawBugReportButton();
+         
+            EditorGUILayout.EndHorizontal();
+            ThaiTextCareGUI.DrawHorizontalLine();
+            EditorGUILayout.Space();
+
             var combinationList = thaiFontDoctor.glyphCombinationList;
             DrawFontAssetSection(combinationList);
             if (thaiFontDoctor.fontAsset == null)
@@ -56,6 +65,9 @@ namespace PhEngine.ThaiTextCare.Editor
             
             combinationHeaderStyle = new GUIStyle(EditorStyles.boldLabel);
             combinationHeaderStyle.fontSize = 15;
+
+            largeLabelStyle = new GUIStyle(EditorStyles.boldLabel);
+            largeLabelStyle.fontSize = 30;
         }
 
         void DrawFontAssetSection(List<GlyphCombination> combinationList)

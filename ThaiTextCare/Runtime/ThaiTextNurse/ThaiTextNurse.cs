@@ -145,7 +145,7 @@ namespace PhEngine.ThaiTextCare
 
         bool IsShouldDrawGizmos()
         {
-            if (guiMode == WordBreakGUIMode.Off || !isTokenize || !enabled)
+            if (guiMode == WordBreakGUIMode.Off || !isTokenize || !enabled || !tmpText.enabled)
                 return false;
 
             if (string.IsNullOrEmpty(tmpText.text))
