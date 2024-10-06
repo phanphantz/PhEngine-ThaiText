@@ -18,10 +18,17 @@ namespace PhEngine.ThaiTextCare.Editor
 
         public override void OnInspectorGUI()
         {
-            miniTextStyle = new GUIStyle(EditorStyles.miniLabel);
+            miniTextStyle = new GUIStyle(EditorStyles.miniBoldLabel);
             miniTextStyle.alignment = TextAnchor.MiddleRight;
 
             PropertyField("correction");
+            var settings = ThaiTextCareSettings.PrepareInstance();
+            if (settings == null)
+                EditorGUILayout.HelpBox("ThaiTextCareSettings.asset is missing. It must be under: " + ThaiTextCareSettings.SettingsPath , MessageType.Error);
+            else if (!ThaiTextNurse.IsDictionaryLoaded)
+                EditorGUILayout.HelpBox("Dictionary is not loaded. It must be under 'Resources' folder: " + ThaiTextNurse.GetDictionaryPath(settings) , MessageType.Error);
+            
+            EditorGUI.BeginDisabledGroup(!ThaiTextNurse.IsDictionaryLoaded || settings == null);
             var currentText = nurse.OutputString;
             var correction = (ThaiGlyphCorrection) serializedObject.FindProperty("correction").enumValueIndex;
             if (correction  == ThaiGlyphCorrection.YoorYingAndToorTaan)
@@ -73,6 +80,7 @@ namespace PhEngine.ThaiTextCare.Editor
             EditorGUILayout.Space();
             DrawDictionarySection();
             EditorGUILayout.EndVertical();
+            EditorGUI.EndDisabledGroup();
         }
 
         void DrawCopyToClipboardButton()
@@ -91,7 +99,15 @@ namespace PhEngine.ThaiTextCare.Editor
         void DrawDictionarySection()
         {
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("Dictionary", EditorStyles.boldLabel);
+            if (GUILayout.Button("\u2192", EditorStyles.miniButton, GUILayout.ExpandWidth(false)))
+            {
+                if (ThaiTextNurse.TryLoadDictionaryAsset(ThaiTextCareSettings.PrepareInstance(), out var textAsset))
+                {
+                    Selection.SetActiveObjectWithContext(textAsset, textAsset);
+                    EditorGUIUtility.PingObject(textAsset);
+                }
+            }
+            EditorGUILayout.LabelField("Dictionary",  EditorStyles.boldLabel);
             GUILayout.FlexibleSpace();
             if (GUILayout.Button("Force Rebuild", EditorStyles.linkLabel, GUILayout.ExpandWidth(false)))
             {
@@ -103,7 +119,7 @@ namespace PhEngine.ThaiTextCare.Editor
             EditorGUI.indentLevel++;
             pendingWords = EditorGUILayout.TextField("Words :", pendingWords);
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("Use [Space] to separate words", EditorStyles.miniLabel);
+            EditorGUILayout.LabelField("Use [Space] to separate words", EditorStyles.miniBoldLabel);
             GUILayout.FlexibleSpace();
             if (GUILayout.Button("Remove", GUILayout.ExpandWidth(false)))
             {

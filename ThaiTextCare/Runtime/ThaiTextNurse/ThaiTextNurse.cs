@@ -56,6 +56,7 @@ namespace PhEngine.ThaiTextCare
         
         public int LastWordCount => lastWordCount;
         public int CharacterInfoLength => tmpText.textInfo.characterInfo.Length;
+        public static bool IsDictionaryLoaded { get; private set; }
 
         [SerializeField, HideInInspector] int lastWordCount;
         
@@ -264,6 +265,7 @@ namespace PhEngine.ThaiTextCare
 
         static bool TryRebuildDictionary(ThaiTextCareSettings settings)
         {
+            IsDictionaryLoaded = false;
             if (!TryLoadDictionaryAsset(settings, out var textAsset)) 
                 return false;
             
@@ -283,7 +285,7 @@ namespace PhEngine.ThaiTextCare
             return true;
         }
 
-        static string GetDictionaryPath(ThaiTextCareSettings settings)
+        public static string GetDictionaryPath(ThaiTextCareSettings settings)
         {
             return settings? settings.DictionaryResourcePath : "dictionary";
         }
@@ -292,6 +294,7 @@ namespace PhEngine.ThaiTextCare
         {
             tokenizer = new PhTokenizer(WordsFromDictionary(textAsset));
             Resources.UnloadAsset(textAsset);
+            IsDictionaryLoaded = true;
             Debug.Log("[ThaiTextNurse] Dictionary Rebuild Completed!");
         }
 
