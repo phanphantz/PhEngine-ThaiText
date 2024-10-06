@@ -1,33 +1,39 @@
+﻿using System.IO;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace PhEngine.ThaiTextCare.Editor
 {
-    public class ThaiTextNurseSettingsProvider : SettingsProvider
+    [CustomEditor(typeof(ThaiTextCareSettings))]
+    public class ThaiTextCareSettingsEditor : UnityEditor.Editor
     {
-        const string SettingsPath = "Project/Thai Text Nurse Settings";
-        ThaiTextNurseSettings settings;
-        SerializedObject serializedObject;
+        ThaiTextCareSettings settings;
 
-        public ThaiTextNurseSettingsProvider(string path, SettingsScope scope = SettingsScope.Project) : base(path, scope)
+        void OnEnable()
         {
-            settings = ThaiTextNurseSettings.PrepareInstance();
-            serializedObject = new SerializedObject(settings);
+            settings = target as ThaiTextCareSettings;
         }
 
-        public override void OnGUI(string searchContext)
+        public override void OnInspectorGUI()
         {
+            Draw(serializedObject, settings);
+        }
+
+        public static void Draw(SerializedObject serializedObject, ThaiTextCareSettings settings)
+        {
+            EditorGUILayout.LabelField("Always keep this asset under: " + Path.GetDirectoryName(ThaiTextCareSettings.SettingsPath), EditorStyles.boldLabel);
+            EditorGUILayout.Space();
+            
             serializedObject.UpdateIfRequiredOrScript();
             EditorGUILayout.PropertyField(serializedObject.FindProperty("dictionaryResourcePath"));
-            EditorGUI.indentLevel++;
             EditorGUILayout.HelpBox("The path must be under 'Resources' folder. Without file extension.", MessageType.Info);
-            EditorGUI.indentLevel--;
             EditorGUILayout.PropertyField(serializedObject.FindProperty("wordBreakType"));
             if (serializedObject.FindProperty("wordBreakType").boolValue)
             {
                 EditorGUI.indentLevel++;
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("customCharacter"));
+                EditorGUILayout.HelpBox("CAUTION: ThaiTextNurse will remove any existing custom characters from text first before tokenize it." , MessageType.Warning);
+
                 EditorGUI.indentLevel--;
             }
             EditorGUILayout.PropertyField(serializedObject.FindProperty("loadDictionaryOnStart"));
@@ -44,24 +50,6 @@ namespace PhEngine.ThaiTextCare.Editor
                 ThaiTextNurse.RebuildDictionary();
             }
             EditorGUILayout.EndHorizontal();
-        }
-        
-        public override void OnActivate(string searchContext, VisualElement rootElement)
-        {
-            base.OnActivate(searchContext, rootElement);
-            Undo.undoRedoPerformed += Repaint;
-        }
-
-        public override void OnDeactivate()
-        {
-            base.OnDeactivate();
-            Undo.undoRedoPerformed -= Repaint;
-        }
-
-        [SettingsProvider]
-        public static SettingsProvider CreateThaiTextNurseSettingsProvider()
-        {
-            return new ThaiTextNurseSettingsProvider(SettingsPath);
         }
     }
 }

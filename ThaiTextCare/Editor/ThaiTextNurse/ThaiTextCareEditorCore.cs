@@ -11,14 +11,14 @@ namespace PhEngine.ThaiTextCare.Editor
     {
         static ThaiTextCareEditorCore()
         {
-            var settings = ThaiTextNurseSettings.PrepareInstance();
+            var settings = ThaiTextCareSettings.PrepareInstance();
             if (settings && settings.IsLoadDictionaryOnEditorStartUp)
                 ThaiTextNurse.RebuildDictionary();
         }
 
         public static void AddWordsToDictionary(string pendingWords)
         {
-            var settings = ThaiTextNurseSettings.PrepareInstance();
+            var settings = ThaiTextCareSettings.PrepareInstance();
             if (!ThaiTextNurse.TryLoadDictionaryAsset(settings, out var textAsset))
                 return;
 
@@ -55,7 +55,7 @@ namespace PhEngine.ThaiTextCare.Editor
 
         public static void RemoveWordsFromDictionary(string pendingWords)
         {
-            var settings = ThaiTextNurseSettings.PrepareInstance();
+            var settings = ThaiTextCareSettings.PrepareInstance();
             if (!ThaiTextNurse.TryLoadDictionaryAsset(settings, out var textAsset))
                 return;
 

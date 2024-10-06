@@ -1,6 +1,4 @@
-using System;
-using System.Collections.Generic;
-using TMPro;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -24,6 +22,26 @@ namespace PhEngine.ThaiTextCare.Editor
             miniTextStyle.alignment = TextAnchor.MiddleRight;
 
             PropertyField("correction");
+            var currentText = nurse.OutputString;
+            var correction = (ThaiGlyphCorrection) serializedObject.FindProperty("correction").enumValueIndex;
+            if (correction  == ThaiGlyphCorrection.YoorYingAndToorTaan)
+            {
+                if (!currentText.Contains("ญ") && !currentText.Contains("ฐ"))
+                {
+                    EditorGUILayout.HelpBox("Your text does not contain any ญ or ฐ. You probably don't need this", MessageType.Warning);
+                }
+            }
+            if (correction != ThaiGlyphCorrection.None)
+            {
+                if (currentText.Any(c => !nurse.TextComponent.font.HasCharacter(c)))
+                    EditorGUILayout.HelpBox("Your Font is missing some extended glyphs in C90 Encoding. Use FontForge to fix this", MessageType.Error);
+                
+                EditorGUILayout.BeginHorizontal();
+                GUILayout.FlexibleSpace();
+                if (GUILayout.Button("How?", GUILayout.ExpandWidth(false)))
+                    Application.OpenURL("https://fontforge.org/en-US/");
+                EditorGUILayout.EndHorizontal();
+            }
             EditorGUILayout.BeginHorizontal();
             PropertyField("isTokenize");
             if (serializedObject.FindProperty("isTokenize").boolValue)

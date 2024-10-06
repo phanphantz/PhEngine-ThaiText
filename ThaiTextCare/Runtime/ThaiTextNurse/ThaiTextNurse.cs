@@ -179,7 +179,7 @@ namespace PhEngine.ThaiTextCare
         public static bool TryTokenize(TokenizeRequest tokenizeRequest, out TokenizeResult result)
         {
             result = null;
-            var settings = ThaiTextNurseSettings.PrepareInstance();
+            var settings = ThaiTextCareSettings.PrepareInstance();
             if (tokenizer == null && !TryRebuildDictionary(settings))
                 return false;
             
@@ -204,14 +204,14 @@ namespace PhEngine.ThaiTextCare
             return true;
         }
 
-        public static string GetWordBreakCharacter(ThaiTextNurseSettings settings)
+        public static string GetWordBreakCharacter(ThaiTextCareSettings settings)
         {
             return settings ? settings.WordBreakCharacter : "​";
         }
 
         public static void RebuildDictionary(bool isUpdateNursesInScene = true)
         {
-            if (!TryRebuildDictionary(ThaiTextNurseSettings.PrepareInstance()))
+            if (!TryRebuildDictionary(ThaiTextCareSettings.PrepareInstance()))
                 throw new InvalidOperationException("Failed to setup Dictionary for ThaiTextNurse");
 
             if (isUpdateNursesInScene)
@@ -241,7 +241,7 @@ namespace PhEngine.ThaiTextCare
 
         public static IEnumerator RebuildDictionaryAsync(bool isUpdateNursesInScene = true, Action<float> onProgress = null, Action onFail = null)
         {
-            var settings = ThaiTextNurseSettings.PrepareInstance();
+            var settings = ThaiTextCareSettings.PrepareInstance();
             var path = GetDictionaryPath(settings);
             var request = Resources.LoadAsync<TextAsset>(path);
             while (!request.isDone)
@@ -262,7 +262,7 @@ namespace PhEngine.ThaiTextCare
                 UpdateAllNursesInScene();
         }
 
-        static bool TryRebuildDictionary(ThaiTextNurseSettings settings)
+        static bool TryRebuildDictionary(ThaiTextCareSettings settings)
         {
             if (!TryLoadDictionaryAsset(settings, out var textAsset)) 
                 return false;
@@ -271,7 +271,7 @@ namespace PhEngine.ThaiTextCare
             return true;
         }
 
-        public static bool TryLoadDictionaryAsset(ThaiTextNurseSettings settings, out TextAsset textAsset)
+        public static bool TryLoadDictionaryAsset(ThaiTextCareSettings settings, out TextAsset textAsset)
         {
             var path = GetDictionaryPath(settings);
             textAsset = Resources.Load<TextAsset>(path);
@@ -283,7 +283,7 @@ namespace PhEngine.ThaiTextCare
             return true;
         }
 
-        static string GetDictionaryPath(ThaiTextNurseSettings settings)
+        static string GetDictionaryPath(ThaiTextCareSettings settings)
         {
             return settings? settings.DictionaryResourcePath : "dictionary";
         }
@@ -315,7 +315,7 @@ namespace PhEngine.ThaiTextCare
             if (!nurse.IsShouldDrawGizmos())
                 return;
             
-            var settings = ThaiTextNurseSettings.PrepareInstance();
+            var settings = ThaiTextCareSettings.PrepareInstance();
             var breakCharacter = ThaiTextNurse.GetWordBreakCharacter(settings);
             if (string.IsNullOrEmpty(breakCharacter))
                 return;

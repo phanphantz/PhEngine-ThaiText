@@ -7,8 +7,7 @@ using UnityEngine;
 
 namespace PhEngine.ThaiTextCare
 {
-    [CreateAssetMenu(menuName = "ThaiTMP/ThaiTextNurseSettings", fileName = "ThaiTextNurseSettings")]
-    public class ThaiTextNurseSettings : ScriptableObject
+    public class ThaiTextCareSettings : ScriptableObject
     {
         public string WordBreakCharacter => wordBreakType == WordBreakType.ZeroWidthSpace
             ? "​"
@@ -24,17 +23,18 @@ namespace PhEngine.ThaiTextCare
         [Header("Editor-Only")]
         [SerializeField] bool loadDictionaryOnStart = true;
         public bool IsLoadDictionaryOnEditorStartUp => loadDictionaryOnStart;
+        public const string SettingsPath = "Assets/Plugins/ThaiTextCare/Resources/ThaiTextCareSettings.asset";
         
-        public static ThaiTextNurseSettings PrepareInstance()
+        public static ThaiTextCareSettings PrepareInstance()
         {
             if (unsafeInstance == null)
             {
-                unsafeInstance = Resources.Load<ScriptableObject>("ThaiTextNurseSettings") as ThaiTextNurseSettings;
+                unsafeInstance = Resources.Load<ScriptableObject>("ThaiTextCareSettings") as ThaiTextCareSettings;
                 if (unsafeInstance == null)
                 {
 #if UNITY_EDITOR
-                    unsafeInstance = CreateInstance<ThaiTextNurseSettings>();
-                    var path = "Assets/Plugins/ThaiFontCare/Resources/ThaiTextNurseSettings.asset";
+                    var path = SettingsPath;
+                    unsafeInstance = CreateInstance<ThaiTextCareSettings>();
                     var directory = Path.GetDirectoryName(path);
                     if (!Directory.Exists(directory) && directory != null)
                             Directory.CreateDirectory(directory);
@@ -50,7 +50,7 @@ namespace PhEngine.ThaiTextCare
             return unsafeInstance;
         }
 
-        static ThaiTextNurseSettings unsafeInstance;
+        static ThaiTextCareSettings unsafeInstance;
     }
 
     public enum WordBreakType

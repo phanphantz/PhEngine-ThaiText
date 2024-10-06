@@ -157,8 +157,16 @@ namespace PhEngine.ThaiTextCare
                     // No match
                     if (HasNoFollower(input, i))
                     {
-                        tokens.Add(input[i].ToString()); 
-                        i++;
+                        if (wasOpenBracket && i < length-1)
+                        {
+                            tokens.Add(input.Substring(i , 2)); 
+                            i+=2;
+                        }
+                        else
+                        {
+                            tokens.Add(input[i].ToString()); 
+                            i++;
+                        }
                     }
                     else
                     {
@@ -169,6 +177,8 @@ namespace PhEngine.ThaiTextCare
                             substringLength++;
                             k++;
                         }
+                        if (wasOpenBracket)
+                            substringLength++;
                         tokens.Add(input.Substring(i , substringLength)); 
                         i+=substringLength;
                     }
