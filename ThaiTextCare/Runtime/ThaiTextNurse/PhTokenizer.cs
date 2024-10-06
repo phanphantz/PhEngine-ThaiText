@@ -199,7 +199,8 @@ namespace PhEngine.ThaiTextCare
             return ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) ||
                    (c >= '๐' && c <= '๙') || (c >= '0' && c <= '9')||
                    (c == '~' || c == 'ๆ' || c == 'ฯ' || c == '“' || c == '”' || c == ',' || c =='.')
-                   || c == ' ' || c == '\n' || c == '\r' || c == '\t';
+                   || c == ' ' || c == '\n' || c == '\r' || c == '\t'
+                   || IsCloseBracket(c);
         }
 
         static bool IsOpenBracket(char c)
