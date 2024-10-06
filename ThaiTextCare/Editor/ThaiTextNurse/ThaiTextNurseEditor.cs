@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEditor;
@@ -42,7 +43,7 @@ namespace PhEngine.ThaiTextCare.Editor
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
             EditorGUILayout.LabelField("Editor-Only", EditorStyles.boldLabel);
             ThaiTextCareGUI.DrawHorizontalLine();
-            PropertyField("isVisualizeInEditor");
+            PropertyField("guiMode");
             PropertyField("guiColor");
             if (GUI.changed)
             {
@@ -109,46 +110,8 @@ namespace PhEngine.ThaiTextCare.Editor
 
         void OnSceneGUI()
         {
-            if (!nurse.IsShouldDrawGizmos())
-                return;
-            
-            var settings = ThaiTextNurseSettings.PrepareInstance();
-            var breakCharacter = ThaiTextNurse.GetWordBreakCharacter(settings);
-            if (string.IsNullOrEmpty(breakCharacter))
-                return;
-
-            var breakIndices = new List<int>();
-            var wordLeftCount = nurse.LastWordCount;
-            for (int i = 0; i < nurse.CharacterInfoLength; i++)
-            {
-                if (nurse.GetCharacterInfo(i).character == breakCharacter[0])
-                {
-                    breakIndices.Add(i);
-                    
-                    //This is needed because CharacterInfos are kind of unreliable on undo
-                    wordLeftCount--;
-                    if (wordLeftCount <= 1)
-                        break;
-                }
-            }
-
-            var oldColor = Handles.color;
-            var color = nurse.guiColor;
-            color.a = 0.75f;
-            Handles.color = color;
-            var widthScale = nurse.transform.lossyScale.x;
-
-            // 0.1f seems to be a magic number that makes the height scale looks correct for Worldspace texts.
-            // Why? I don't know... Unity magic?
-            var heightScale = nurse.transform.lossyScale.y * (nurse.TextComponent is TextMeshProUGUI ? 1f : 0.1f);
-            foreach (int index in breakIndices)
-            {
-                var charInfo = nurse.GetCharacterInfo(index);
-                Vector3 pos = nurse.transform.TransformPoint(charInfo.bottomRight);
-                float lineHeight = charInfo.pointSize * heightScale;
-                Handles.DrawLine(pos, pos + Vector3.up * lineHeight, 3f * widthScale);
-            }
-            Handles.color = oldColor;
+            if (nurse.guiMode == WordBreakGUIMode.OnSelected)
+                ThaiTextNurse.VisualizeInEditor(nurse);
         }
     }
 }

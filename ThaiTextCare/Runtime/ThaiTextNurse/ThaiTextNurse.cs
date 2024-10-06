@@ -1,8 +1,13 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace PhEngine.ThaiTextCare
 {
@@ -54,7 +59,7 @@ namespace PhEngine.ThaiTextCare
 
         [SerializeField, HideInInspector] int lastWordCount;
         
-        public bool isVisualizeInEditor = true;
+        public WordBreakGUIMode guiMode;
         public Color guiColor = new Color(0f, 0.5f, 0.8f);
         
         static PhTokenizer tokenizer;
@@ -132,14 +137,14 @@ namespace PhEngine.ThaiTextCare
             return outputString;
         }
         
-        public TMP_CharacterInfo GetCharacterInfo(int index)
+        TMP_CharacterInfo GetCharacterInfo(int index)
         {
             return tmpText.textInfo.characterInfo[index];
         }
 
-        public bool IsShouldDrawGizmos()
+        bool IsShouldDrawGizmos()
         {
-            if (!isVisualizeInEditor || !isTokenize || !enabled)
+            if (guiMode == WordBreakGUIMode.Off || !isTokenize || !enabled)
                 return false;
 
             if (string.IsNullOrEmpty(tmpText.text))
@@ -147,7 +152,13 @@ namespace PhEngine.ThaiTextCare
             
             return true;
         }
-        
+
+        void OnDrawGizmos()
+        {
+            if (guiMode == WordBreakGUIMode.Always)
+                VisualizeInEditor(this);
+        }
+
         #region Static Methods
         
         public static string SafeTokenize(string input)
@@ -298,11 +309,62 @@ namespace PhEngine.ThaiTextCare
                     .ToArray();
         }
         
+        public static void VisualizeInEditor(ThaiTextNurse nurse)
+        {
+#if UNITY_EDITOR
+            if (!nurse.IsShouldDrawGizmos())
+                return;
+            
+            var settings = ThaiTextNurseSettings.PrepareInstance();
+            var breakCharacter = ThaiTextNurse.GetWordBreakCharacter(settings);
+            if (string.IsNullOrEmpty(breakCharacter))
+                return;
+
+            var breakIndices = new List<int>();
+            var wordLeftCount = nurse.LastWordCount;
+            for (int i = 0; i < nurse.CharacterInfoLength; i++)
+            {
+                if (nurse.GetCharacterInfo(i).character == breakCharacter[0])
+                {
+                    breakIndices.Add(i);
+                    
+                    //This is needed because CharacterInfos are kind of unreliable on undo
+                    wordLeftCount--;
+                    if (wordLeftCount <= 1)
+                        break;
+                }
+            }
+
+            var oldColor = Handles.color;
+            var color = nurse.guiColor;
+            color.a = 0.75f;
+            Handles.color = color;
+            var widthScale = nurse.transform.lossyScale.x;
+
+            // 0.1f seems to be a magic number that makes the height scale looks correct for Worldspace texts.
+            // Why? I don't know... Unity magic?
+            var heightScale = nurse.transform.lossyScale.y * (nurse.TextComponent is TextMeshProUGUI ? 1f : 0.1f);
+            foreach (int index in breakIndices)
+            {
+                var charInfo = nurse.GetCharacterInfo(index);
+                Vector3 pos = nurse.transform.TransformPoint(charInfo.bottomRight);
+                float lineHeight = charInfo.pointSize * heightScale;
+                Handles.DrawLine(pos, pos + Vector3.up * lineHeight, 3f * widthScale);
+            }
+            Handles.color = oldColor;
+#endif
+        }
+        
         #endregion
     }
 
     public enum ThaiGlyphCorrection
     {
         None, YoorYingAndToorTaan, FullC90
+    }
+
+    public enum WordBreakGUIMode
+    {
+        OnSelected, Always, Off
     }
 }
