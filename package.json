@@ -4,9 +4,6 @@
   "version": "0.1.2",
   "description": "PhEngine Thai Text package",
   "keywords": [],
-  "dependencies": {
-    "com.unity.textmeshpro": ""
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/phanphantz/PhEngine-ThaiText"
